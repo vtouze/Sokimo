@@ -1,27 +1,41 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Tilemap topTilemap;
-
     [SerializeField] private float moveCooldown = 0.2f;
+
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private float zoomAmount = 3f;
+    [SerializeField] private float zoomDuration = 0.5f;
+
+    [SerializeField] private CanvasGroup fadeCanvasGroup; // CanvasGroup avec une image noire en fullscreen
 
     private Vector3Int currentGridPos;
     private float lastMoveTime = 0f;
 
-    private Vector3Int previousGridPos;
-
-    // For swipe detection
     private Vector2 touchStartPos;
     private bool swipeStarted = false;
-    private float minSwipeDistance = 50f; // Minimum pixels for a valid swipe
+    private float minSwipeDistance = 50f;
+
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    private IdleFloat idleFloatScript;
 
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
-        previousGridPos = currentGridPos;
+        transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+
+        if (mainCamera == null)
+            mainCamera = Camera.main;
+
+        idleFloatScript = GetComponent<IdleFloat>();
+        if (idleFloatScript == null)
+            Debug.LogWarning("IdleFloat script not found on Player.");
     }
 
     void Update()
@@ -29,9 +43,18 @@ public class PlayerController : MonoBehaviour
         if (Time.time - lastMoveTime < moveCooldown)
             return;
 
-        Vector3Int direction = Vector3Int.zero;
+        Vector3Int direction = GetInputDirection();
 
-        // Touch input for swipe detection
+        if (direction != Vector3Int.zero)
+        {
+            TryMove(direction);
+        }
+    }
+
+    private Vector3Int GetInputDirection()
+    {
+        Vector3Int dir = Vector3Int.zero;
+
         if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
@@ -44,79 +67,124 @@ public class PlayerController : MonoBehaviour
                     break;
 
                 case TouchPhase.Ended:
-                    if (!swipeStarted) break;
+                    if (!swipeStarted) return Vector3Int.zero;
 
-                    Vector2 touchEndPos = touch.position;
-                    Vector2 swipeVector = touchEndPos - touchStartPos;
-
-                    if (swipeVector.magnitude >= minSwipeDistance)
-                    {
-                        swipeVector.Normalize();
-
-                        // Determine swipe direction (up, down, left, right)
-                        if (Mathf.Abs(swipeVector.x) > Mathf.Abs(swipeVector.y))
-                        {
-                            // Horizontal swipe
-                            if (swipeVector.x > 0)
-                                direction = new Vector3Int(1, 0, 0);   // Right
-                            else
-                                direction = new Vector3Int(-1, 0, 0);  // Left
-                        }
-                        else
-                        {
-                            // Vertical swipe
-                            if (swipeVector.y > 0)
-                                direction = new Vector3Int(0, 1, 0);   // Up
-                            else
-                                direction = new Vector3Int(0, -1, 0);  // Down
-                        }
-                    }
+                    Vector2 swipe = touch.position - touchStartPos;
                     swipeStarted = false;
+
+                    if (swipe.magnitude < minSwipeDistance) return Vector3Int.zero;
+
+                    swipe.Normalize();
+
+                    if (Mathf.Abs(swipe.x) > Mathf.Abs(swipe.y))
+                        dir = swipe.x > 0 ? Vector3Int.right : Vector3Int.left;
+                    else
+                        dir = swipe.y > 0 ? Vector3Int.up : Vector3Int.down;
                     break;
             }
         }
         else
         {
-            // Optional: handle keyboard input here as fallback
-            if (Input.GetKeyDown(KeyCode.W)) direction = new Vector3Int(0, 1, 0);
-            if (Input.GetKeyDown(KeyCode.S)) direction = new Vector3Int(0, -1, 0);
-            if (Input.GetKeyDown(KeyCode.A)) direction = new Vector3Int(-1, 0, 0);
-            if (Input.GetKeyDown(KeyCode.D)) direction = new Vector3Int(1, 0, 0);
+            if (Input.GetKeyDown(KeyCode.W)) dir = Vector3Int.up;
+            if (Input.GetKeyDown(KeyCode.S)) dir = Vector3Int.down;
+            if (Input.GetKeyDown(KeyCode.A)) dir = Vector3Int.left;
+            if (Input.GetKeyDown(KeyCode.D)) dir = Vector3Int.right;
         }
 
-        if (direction != Vector3Int.zero)
-        {
-            Move(direction);
-        }
+        return dir;
     }
 
-    public void Move(Vector3Int direction)
+    private void TryMove(Vector3Int direction)
     {
-        if (Time.time - lastMoveTime < moveCooldown)
-            return;
-
         Vector3Int targetPos = currentGridPos + direction;
 
         if (groundTilemap.HasTile(targetPos) && !topTilemap.HasTile(targetPos))
         {
-            previousGridPos = currentGridPos;
             currentGridPos = targetPos;
             transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
             lastMoveTime = Time.time;
+
+            // Vérifier si un ennemi est sur la même case
+            if (EnemyOnSameTile(currentGridPos))
+            {
+                // Démarrer la disparition + zoom + reload
+                StartCoroutine(DeathSequence());
+            }
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Coin coin = other.GetComponent<Coin>();
-        if (coin != null)
+        if (other.TryGetComponent(out Coin coin))
         {
             coin.Collect();
         }
     }
 
-    public Vector3Int GetCurrentGridPosition()
+    private bool EnemyOnSameTile(Vector3Int pos)
     {
-        return currentGridPos;
+        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        foreach (var enemy in enemies)
+        {
+            Vector3Int enemyGridPos = groundTilemap.WorldToCell(enemy.transform.position);
+            if (enemyGridPos == pos)
+                return true;
+        }
+        return false;
+    }
+
+    private IEnumerator DeathSequence()
+    {
+        // Stopper l'animation IdleFloat
+        if (idleFloatScript != null)
+            idleFloatScript.enabled = false;
+
+        // Démarrer la séquence de zoom + disparition + reload
+        yield return StartCoroutine(ZoomFadeReloadSequence());
+    }
+
+    private IEnumerator ZoomFadeReloadSequence()
+    {
+        float startSize = mainCamera.orthographicSize;
+        float targetSize = startSize / zoomAmount;
+
+        // 1. Zoom caméra (sans toucher au sprite)
+        float timer = 0f;
+        while (timer < zoomDuration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / zoomDuration;
+
+            mainCamera.orthographicSize = Mathf.Lerp(startSize, targetSize, t);
+            mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
+
+            yield return null;
+        }
+
+        // 2. Disparition progressive du sprite (alpha 1 -> 0)
+        timer = 0f;
+        Color originalColor = spriteRenderer.color;
+        while (timer < zoomDuration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / zoomDuration;
+
+            float alpha = Mathf.Lerp(1f, 0f, t);
+            spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
+
+            yield return null;
+        }
+
+        // 3. Fade écran noir
+        timer = 0f;
+        while (timer < zoomDuration)
+        {
+            timer += Time.deltaTime;
+            fadeCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / zoomDuration);
+            yield return null;
+        }
+
+        // 4. Reload scène
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

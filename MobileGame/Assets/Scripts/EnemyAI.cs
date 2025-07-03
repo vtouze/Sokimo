@@ -9,6 +9,12 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField] private float moveCooldown = 0.2f;
 
+    [Header("Sprites")]
+    [SerializeField] private Sprite idleSprite;
+    [SerializeField] private Sprite chaseSprite;
+
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
     private Vector3Int currentGridPos;
     private bool isChasing = false;
     private float lastMoveTime = 0f;
@@ -21,10 +27,20 @@ public class EnemyAI : MonoBehaviour
         new Vector3Int(-1, 0, 0)
     };
 
+    void Awake()
+    {
+        if (spriteRenderer == null)
+            Debug.LogError("SpriteRenderer not found on EnemyAI GameObject!");
+    }
+
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
         transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+
+        // Assigner le sprite idle au départ
+        if (spriteRenderer != null && idleSprite != null)
+            spriteRenderer.sprite = idleSprite;
     }
 
     void Update()
@@ -38,12 +54,15 @@ public class EnemyAI : MonoBehaviour
         if (!isChasing && manhattanDist == 1)
         {
             isChasing = true;
+
+            // Changement du sprite au début de la chasse
+            if (spriteRenderer != null && chaseSprite != null)
+                spriteRenderer.sprite = chaseSprite;
         }
 
         if (!isChasing)
             return;
 
-        // Stay at exactly 1 tile away
         if (manhattanDist > 1)
         {
             Vector3Int bestMove = currentGridPos;
@@ -56,7 +75,7 @@ public class EnemyAI : MonoBehaviour
                 if (distToPlayer == 1 && IsWalkable(candidate))
                 {
                     bestMove = candidate;
-                    break; // Move to the first valid 1-tile-away cell
+                    break;
                 }
             }
 
