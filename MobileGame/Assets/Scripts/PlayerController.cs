@@ -11,9 +11,12 @@ public class PlayerController : MonoBehaviour
     private Vector3Int currentGridPos;
     private float lastMoveTime = 0f;
 
+    private Vector3Int previousGridPos;
+
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
+        previousGridPos = currentGridPos;
     }
 
     void Update()
@@ -34,11 +37,11 @@ public class PlayerController : MonoBehaviour
 
             if (groundTilemap.HasTile(targetPos) && !topTilemap.HasTile(targetPos))
             {
+                previousGridPos = currentGridPos;  // Save previous position BEFORE moving
                 currentGridPos = targetPos;
                 transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
                 lastMoveTime = Time.time;
             }
-
         }
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -48,6 +51,11 @@ public class PlayerController : MonoBehaviour
         {
             coin.Collect();
         }
+    }
+
+    public Vector3Int GetPreviousGridPosition()
+    {
+        return previousGridPos;
     }
 
 }
