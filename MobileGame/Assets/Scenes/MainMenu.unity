@@ -1483,7 +1483,7 @@ GameObject:
   - component: {fileID: 300220742}
   - component: {fileID: 300220741}
   m_Layer: 5
-  m_Name: Piece_Text
+  m_Name: Coin_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2259,7 +2259,7 @@ GameObject:
   - component: {fileID: 399664119}
   - component: {fileID: 399664118}
   m_Layer: 5
-  m_Name: Piece_Image
+  m_Name: Coin_Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5557,6 +5557,7 @@ GameObject:
   m_Component:
   - component: {fileID: 915487244}
   - component: {fileID: 915487245}
+  - component: {fileID: 915487246}
   m_Layer: 5
   m_Name: Lane1_HorizontalBox
   m_TagString: Untagged
@@ -5610,6 +5611,24 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &915487246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 915487243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565053b40c9a173418efd038f54123d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardButton: {fileID: 1466323223}
+  buttonImage: {fileID: 1466323224}
+  spriteAvailable: {fileID: -114814906, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
+  spriteCooldown: {fileID: 2119750450, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
+  timerText: {fileID: 1993434696}
+  cooldownDuration: 10
 --- !u!1 &926385157
 GameObject:
   m_ObjectHideFlags: 0
@@ -8597,7 +8616,7 @@ GameObject:
   - component: {fileID: 1466323224}
   - component: {fileID: 1466323223}
   m_Layer: 5
-  m_Name: WatchAd_Button
+  m_Name: FreeClaim_Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11433,6 +11452,51 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1888454895
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1888454897}
+  - component: {fileID: 1888454896}
+  m_Layer: 0
+  m_Name: CoinManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1888454896
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888454895}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f8c6843fa6daf841b67a8f3d6c2f93a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinText: {fileID: 197000547}
+--- !u!4 &1888454897
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888454895}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1900236078
 GameObject:
   m_ObjectHideFlags: 0
@@ -11654,7 +11718,7 @@ GameObject:
   - component: {fileID: 1918461669}
   - component: {fileID: 1918461668}
   m_Layer: 5
-  m_Name: PiecesGain_HorizontalBox
+  m_Name: FreeCoin_HorizontalBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12314,7 +12378,7 @@ GameObject:
   - component: {fileID: 1993434697}
   - component: {fileID: 1993434696}
   m_Layer: 5
-  m_Name: Piece_Text
+  m_Name: Timer_Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13280,3 +13344,4 @@ SceneRoots:
   - {fileID: 1157069871}
   - {fileID: 1809701618}
   - {fileID: 720809629}
+  - {fileID: 1888454897}

@@ -18,7 +18,7 @@ public class LevelSelectionManager : MonoBehaviour
 
     void UpdateLevelButtons()
     {
-        int pieces = GameData.Pieces;
+        int pieces = CoinManager.Instance?.CurrentCoins ?? 0;
         Debug.Log($"You have {pieces} pieces. Total levels: {levels.Count}");
 
         for (int i = 0; i < levels.Count; i++)
