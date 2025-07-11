@@ -20,7 +20,7 @@ public class Coin : MonoBehaviour
 
         if (coinFlyer != null)
         {
-            coinFlyer.LaunchToUI();
+            coinFlyer.LaunchToUIFromWorld();
         }
     }
 }

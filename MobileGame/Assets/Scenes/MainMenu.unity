@@ -4184,7 +4184,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _androidGameId: 5894437
   _iOSGameId: 5894436
-  _testMode: 1
+  _testMode: 0
+  adsInterstitial: {fileID: 720809627}
 --- !u!4 &720809629
 Transform:
   m_ObjectHideFlags: 0
@@ -10967,7 +10968,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 720809627}
         m_TargetAssemblyTypeName: AdsInterstitial, Assembly-CSharp
-        m_MethodName: ShowAd
+        m_MethodName: OnClickShowAd
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
