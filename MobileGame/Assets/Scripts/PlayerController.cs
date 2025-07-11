@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private SpriteRenderer spriteRenderer;
     private IdleFloat idleFloatScript;
 
+    [SerializeField] private FadeManager fadeManager;
+
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
@@ -135,56 +137,45 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DeathSequence()
     {
-        // Stopper l'animation IdleFloat
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
 
-        // Démarrer la séquence de zoom + disparition + reload
-        yield return StartCoroutine(ZoomFadeReloadSequence());
+        // Supprime le fadeCanvasGroup alpha ici (plus nécessaire)
+
+        // Zoom et disparition du sprite restent (ou tu peux les intégrer dans le fadeManager si tu veux)
+        yield return StartCoroutine(ZoomAndFadeSprite());
+
+        // Ensuite lance le fadeOut avec FadeManager et recharge scène
+        fadeManager.PlayFadeOutAndLoadScene(SceneManager.GetActiveScene().name);
+
+        // Attend la durée du fade pour éviter que le reste du code ne continue trop tôt (optionnel)
+        yield return new WaitForSeconds(fadeManager.fadeDuration);
     }
 
-    private IEnumerator ZoomFadeReloadSequence()
+    private IEnumerator ZoomAndFadeSprite()
     {
         float startSize = mainCamera.orthographicSize;
         float targetSize = startSize / zoomAmount;
 
-        // 1. Zoom caméra (sans toucher au sprite)
         float timer = 0f;
         while (timer < zoomDuration)
         {
             timer += Time.deltaTime;
             float t = timer / zoomDuration;
-
             mainCamera.orthographicSize = Mathf.Lerp(startSize, targetSize, t);
             mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
-
             yield return null;
         }
 
-        // 2. Disparition progressive du sprite (alpha 1 -> 0)
         timer = 0f;
         Color originalColor = spriteRenderer.color;
         while (timer < zoomDuration)
         {
             timer += Time.deltaTime;
             float t = timer / zoomDuration;
-
             float alpha = Mathf.Lerp(1f, 0f, t);
             spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
-
             yield return null;
         }
-
-        // 3. Fade écran noir
-        timer = 0f;
-        while (timer < zoomDuration)
-        {
-            timer += Time.deltaTime;
-            fadeCanvasGroup.alpha = Mathf.Lerp(0f, 1f, timer / zoomDuration);
-            yield return null;
-        }
-
-        // 4. Reload scène
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
