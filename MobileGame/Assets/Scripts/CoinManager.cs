@@ -61,4 +61,10 @@ public class CoinManager : MonoBehaviour
         coinText = text;
         UpdateCoinText();
     }
+
+    void ResetCoinPrefs()
+    {
+        PlayerPrefs.DeleteKey("Coins");
+        PlayerPrefs.Save();
+    }
 }

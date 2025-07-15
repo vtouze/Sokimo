@@ -1,7 +1,7 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class DailyRewardButton : MonoBehaviour
 {
@@ -11,16 +11,14 @@ public class DailyRewardButton : MonoBehaviour
     public Sprite spriteCooldown;
     public TMP_Text timerText;
 
-    // Duration in seconds (set to 5 for testing, 86400 for 24h)
-    public int cooldownDuration = 10;
+    public int cooldownDuration = 10; // e.g., 86400 for 24h
 
     private DateTime nextRewardTime;
-    private bool isReady = false;
+    private bool isReady;
 
     void Start()
     {
         LoadNextRewardTime();
-
         rewardButton.onClick.AddListener(ClaimReward);
         UpdateUI();
     }
@@ -30,6 +28,7 @@ public class DailyRewardButton : MonoBehaviour
         if (!isReady)
         {
             TimeSpan remaining = nextRewardTime - DateTime.UtcNow;
+
             if (remaining <= TimeSpan.Zero)
             {
                 isReady = true;
@@ -50,30 +49,20 @@ public class DailyRewardButton : MonoBehaviour
         CoinManager.Instance?.AddCoin();
 
         nextRewardTime = DateTime.UtcNow.AddSeconds(cooldownDuration);
-        PlayerPrefs.SetString("NextRewardTime", nextRewardTime.ToBinary().ToString());
-        PlayerPrefs.Save();
+        SaveNextRewardTime();
+
+        // 🔔 Schedule notification when reward goes on cooldown
+        NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
 
         isReady = false;
         UpdateUI();
-
-        // 🔔 Schedule notification right now
-        NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
     }
-
 
     void UpdateUI()
     {
-        if (isReady)
-        {
-            rewardButton.interactable = true;
-            buttonImage.sprite = spriteAvailable;
-            timerText.text = "Ready!";
-        }
-        else
-        {
-            rewardButton.interactable = false;
-            buttonImage.sprite = spriteCooldown;
-        }
+        rewardButton.interactable = isReady;
+        buttonImage.sprite = isReady ? spriteAvailable : spriteCooldown;
+        timerText.text = isReady ? "Ready!" : timerText.text;
     }
 
     void LoadNextRewardTime()
@@ -83,12 +72,6 @@ public class DailyRewardButton : MonoBehaviour
             long binary = Convert.ToInt64(PlayerPrefs.GetString("NextRewardTime"));
             nextRewardTime = DateTime.FromBinary(binary);
             isReady = DateTime.UtcNow >= nextRewardTime;
-
-            // 🔔 Schedule notification if not ready yet
-            if (!isReady)
-            {
-                NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
-            }
         }
         else
         {
@@ -96,4 +79,9 @@ public class DailyRewardButton : MonoBehaviour
         }
     }
 
+    void SaveNextRewardTime()
+    {
+        PlayerPrefs.SetString("NextRewardTime", nextRewardTime.ToBinary().ToString());
+        PlayerPrefs.Save();
+    }
 }
