@@ -3,8 +3,8 @@ using UnityEngine.Advertisements;
 
 public class AdsInterstitial : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
 {
-    [SerializeField] string _androidAdUnitId = "Interstitial_Android";
-    [SerializeField] string _iOSAdUnitId = "Interstitial_iOS";
+    [SerializeField] string _androidAdUnitId = "Rewarded_Android";
+    [SerializeField] string _iOSAdUnitId = "Rewarded_iOS";
     private string _adUnitId;
     private bool _adIsLoaded = false;
 
@@ -74,8 +74,16 @@ public class AdsInterstitial : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsSh
 
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState showCompletionState)
     {
-        Debug.Log($"Ad finished: {adUnitId} - Completion State: {showCompletionState}");
-        LoadAd(); // Recharge une pub pour la prochaine fois
-        CoinManager.Instance?.AddCoin();
+        if (adUnitId == _adUnitId && showCompletionState == UnityAdsShowCompletionState.COMPLETED)
+        {
+            Debug.Log("User watched the full ad. Grant reward.");
+            CoinManager.Instance?.AddCoin();
+        }
+        else
+        {
+            Debug.Log("Ad was skipped or failed. No reward.");
+        }
+
+        LoadAd(); // Preload for next time
     }
 }

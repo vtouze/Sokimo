@@ -10,6 +10,9 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 
     private string _gameId;
 
+    // Public static flag to indicate initialization status
+    public static bool adsInitialized = false;
+
     void Awake()
     {
         InitializeAds();
@@ -18,11 +21,11 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void InitializeAds()
     {
 #if UNITY_IOS
-    _gameId = _iOSGameId;
+        _gameId = _iOSGameId;
 #elif UNITY_ANDROID
         _gameId = _androidGameId;
 #elif UNITY_EDITOR
-    _gameId = _androidGameId; //Only for testing the functionality in the Editor
+        _gameId = _androidGameId; // Only for testing the functionality in the Editor
 #endif
 
         if (!Advertisement.isInitialized && Advertisement.isSupported)
@@ -34,11 +37,13 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void OnInitializationComplete()
     {
         Debug.Log("Unity Ads initialization complete.");
+        adsInitialized = true; // Set flag true on success
         adsInterstitial.LoadAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {
         Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
+        adsInitialized = false; // Set flag false on failure
     }
 }
