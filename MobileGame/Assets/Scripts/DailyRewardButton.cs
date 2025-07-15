@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -46,18 +46,20 @@ public class DailyRewardButton : MonoBehaviour
     {
         if (!isReady) return;
 
-        // Give coin
         Debug.Log("1 coin added!");
         CoinManager.Instance?.AddCoin();
 
-        // Set next time
         nextRewardTime = DateTime.UtcNow.AddSeconds(cooldownDuration);
         PlayerPrefs.SetString("NextRewardTime", nextRewardTime.ToBinary().ToString());
         PlayerPrefs.Save();
 
         isReady = false;
         UpdateUI();
+
+        // 🔔 Schedule notification right now
+        NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
     }
+
 
     void UpdateUI()
     {
@@ -81,10 +83,17 @@ public class DailyRewardButton : MonoBehaviour
             long binary = Convert.ToInt64(PlayerPrefs.GetString("NextRewardTime"));
             nextRewardTime = DateTime.FromBinary(binary);
             isReady = DateTime.UtcNow >= nextRewardTime;
+
+            // 🔔 Schedule notification if not ready yet
+            if (!isReady)
+            {
+                NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
+            }
         }
         else
         {
             isReady = true;
         }
     }
+
 }
