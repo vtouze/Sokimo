@@ -10,7 +10,7 @@ public class PlayerItemSystem : MonoBehaviour
 
     private GameObject currentItemVisual;
     private ItemType currentItem = ItemType.None;
-    private GameObject currentItemPrefab; // Original prefab for dropping
+    private GameObject currentItemPrefab;
 
     public bool HasKey => currentItem == ItemType.Key;
     public bool HasSword => currentItem == ItemType.Sword;
@@ -22,13 +22,13 @@ public class PlayerItemSystem : MonoBehaviour
         if (currentItem != ItemType.None && currentItemPrefab != null)
         {
             GameObject dropped = Instantiate(currentItemPrefab, pickupPosition, Quaternion.identity);
+            dropped.SetActive(true);
             SetupDroppedItemCollider(dropped);
 
-            // 🔁 Reset pickup state on the newly dropped object
             ItemPickup itemPickup = dropped.GetComponent<ItemPickup>();
             if (itemPickup != null)
             {
-                itemPickup.ResetPickup(); // ← this is the key!
+                itemPickup.ResetPickup();
             }
 
             Debug.Log($"Dropped {currentItem} at {pickupPosition}");
@@ -42,7 +42,6 @@ public class PlayerItemSystem : MonoBehaviour
         if (currentItemVisual != null)
         {
             Debug.Log($"Destroying current visual for {currentItem}");
-            //currentItemVisual.SetActive(false);
             Destroy(currentItemVisual);
             currentItemVisual = null;
         }
@@ -52,11 +51,9 @@ public class PlayerItemSystem : MonoBehaviour
 
         Debug.Log($"Now holding {currentItem}");
 
-        // Disable holders initially
         if (keyHolder != null) keyHolder.gameObject.SetActive(false);
         if (swordHolder != null) swordHolder.gameObject.SetActive(false);
 
-        // Instantiate new visual on correct holder
         if (newVisualPrefab != null)
         {
             Transform targetHolder = newItem switch
@@ -72,14 +69,6 @@ public class PlayerItemSystem : MonoBehaviour
                 currentItemVisual = Instantiate(newVisualPrefab, targetHolder.position, Quaternion.identity, targetHolder);
                 Debug.Log($"Instantiated visual for {newItem} on {targetHolder.name}");
             }
-            else
-            {
-                Debug.LogWarning("No valid holder found for item type " + newItem);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("New visual prefab is null for item " + newItem);
         }
     }
 
@@ -91,12 +80,7 @@ public class PlayerItemSystem : MonoBehaviour
             Debug.Log($"Setting collider on dropped item {dropped.name}: isTrigger = false, temporarily disabling collider");
             col.isTrigger = false;
 
-            // Disable collider briefly to avoid immediate pickup issues
             StartCoroutine(ReenableColliderAfterDelay(col, 3));
-        }
-        else
-        {
-            Debug.LogWarning($"Dropped item {dropped.name} has no Collider2D");
         }
     }
 
@@ -115,10 +99,6 @@ public class PlayerItemSystem : MonoBehaviour
             Debug.Log("Consuming key");
             ClearItem();
         }
-        else
-        {
-            Debug.LogWarning("Attempted to consume key but no key is held");
-        }
     }
 
     public void ConsumeSword()
@@ -127,10 +107,6 @@ public class PlayerItemSystem : MonoBehaviour
         {
             Debug.Log("Consuming sword");
             ClearItem();
-        }
-        else
-        {
-            Debug.LogWarning("Attempted to consume sword but no sword is held");
         }
     }
 
@@ -142,7 +118,6 @@ public class PlayerItemSystem : MonoBehaviour
 
         if (currentItemVisual != null)
         {
-            //currentItemVisual.SetActive(false);
             Destroy(currentItemVisual);
             currentItemVisual = null;
         }
