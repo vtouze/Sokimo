@@ -7,8 +7,8 @@ public class IdleFloat : MonoBehaviour
     [SerializeField] private IdleType idleType = IdleType.FloatOnly;
 
     [Header("Float Settings")]
-    [SerializeField] private float amplitude = 10f;
-    [SerializeField] private float duration = 0.75f;
+    [SerializeField] private float amplitude = 0.1f;
+    [SerializeField] private float duration = 0.5f;
 
     [Header("Rotation Settings")]
     [SerializeField] private float rotationAmount = 90f;
@@ -22,6 +22,9 @@ public class IdleFloat : MonoBehaviour
 
     void Start()
     {
+        transform.localPosition = Vector3.zero;
+        transform.localEulerAngles = Vector3.zero;
+
         startLocalPos = transform.localPosition;
         startLocalEuler = transform.localEulerAngles;
         startScale = transform.localScale;
@@ -45,7 +48,7 @@ public class IdleFloat : MonoBehaviour
         LeanTween.moveLocalY(gameObject, startLocalPos.y + amplitude, duration)
             .setEaseInOutSine()
             .setLoopPingPong()
-            .setDelay(Random.Range(0f, duration)); // random delay up to duration
+            .setDelay(Random.Range(0f, duration));
     }
 
     private void StartFloatAndRotate()

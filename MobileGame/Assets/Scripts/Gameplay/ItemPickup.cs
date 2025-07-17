@@ -11,20 +11,17 @@ public class ItemPickup : MonoBehaviour
     {
         if (pickedUp)
         {
-            Debug.Log("Already picked up, ignoring trigger.");
-            return; // prevent multiple pickups
+            return;
         }
 
         PlayerItemSystem itemSystem = other.GetComponent<PlayerItemSystem>();
         if (itemSystem != null)
         {
             Vector3 pickupPosition = transform.position;
-            Debug.Log($"Player detected for item pickup: {itemType} at {pickupPosition}");
 
             itemSystem.PickupItem(itemType, itemVisualPrefab, pickupPosition);
 
             pickedUp = true;
-            Debug.Log($"Picked up {itemType}, destroying pickup object.");
             gameObject.SetActive(false);
         }
     }

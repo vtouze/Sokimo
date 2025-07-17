@@ -17,8 +17,6 @@ public class PlayerItemSystem : MonoBehaviour
 
     public void PickupItem(ItemType newItem, GameObject newVisualPrefab, Vector3 pickupPosition)
     {
-        Debug.Log($"Player tries to pick up {newItem} at position {pickupPosition}");
-
         if (currentItem != ItemType.None && currentItemPrefab != null)
         {
             GameObject dropped = Instantiate(currentItemPrefab, pickupPosition, Quaternion.identity);
@@ -30,26 +28,16 @@ public class PlayerItemSystem : MonoBehaviour
             {
                 itemPickup.ResetPickup();
             }
-
-            Debug.Log($"Dropped {currentItem} at {pickupPosition}");
-        }
-        else
-        {
-            Debug.Log("No item to drop.");
         }
 
-        // Destroy old visual
         if (currentItemVisual != null)
         {
-            Debug.Log($"Destroying current visual for {currentItem}");
             Destroy(currentItemVisual);
             currentItemVisual = null;
         }
 
         currentItem = newItem;
         currentItemPrefab = newVisualPrefab;
-
-        Debug.Log($"Now holding {currentItem}");
 
         if (keyHolder != null) keyHolder.gameObject.SetActive(false);
         if (swordHolder != null) swordHolder.gameObject.SetActive(false);
@@ -66,8 +54,6 @@ public class PlayerItemSystem : MonoBehaviour
             if (targetHolder != null)
             {
                 targetHolder.gameObject.SetActive(true);
-                currentItemVisual = Instantiate(newVisualPrefab, targetHolder.position, Quaternion.identity, targetHolder);
-                Debug.Log($"Instantiated visual for {newItem} on {targetHolder.name}");
             }
         }
     }
@@ -77,7 +63,6 @@ public class PlayerItemSystem : MonoBehaviour
         Collider2D col = dropped.GetComponent<Collider2D>();
         if (col != null)
         {
-            Debug.Log($"Setting collider on dropped item {dropped.name}: isTrigger = false, temporarily disabling collider");
             col.isTrigger = false;
 
             StartCoroutine(ReenableColliderAfterDelay(col, 3));
@@ -89,14 +74,12 @@ public class PlayerItemSystem : MonoBehaviour
         col.enabled = false;
         yield return new WaitForSeconds(delay);
         col.enabled = true;
-        Debug.Log($"Re-enabled collider on dropped item after {delay} seconds");
     }
 
     public void ConsumeKey()
     {
         if (currentItem == ItemType.Key)
         {
-            Debug.Log("Consuming key");
             ClearItem();
         }
     }
@@ -105,14 +88,12 @@ public class PlayerItemSystem : MonoBehaviour
     {
         if (currentItem == ItemType.Sword)
         {
-            Debug.Log("Consuming sword");
             ClearItem();
         }
     }
 
     private void ClearItem()
     {
-        Debug.Log($"Clearing held item {currentItem}");
         currentItem = ItemType.None;
         currentItemPrefab = null;
 
