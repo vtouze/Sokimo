@@ -151,8 +151,17 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(DeathSequence());
+                    StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
                 }
+            }
+        }
+
+        foreach (var col in colliders)
+        {
+            if (col.CompareTag("RedFlag"))
+            {
+                StartCoroutine(EndingSequence("MainMenu"));
+                return;
             }
         }
     }
@@ -199,7 +208,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    private IEnumerator DeathSequence()
+    private IEnumerator EndingSequence(string sceneName)
     {
         isBlocked = true;
 
@@ -207,11 +216,10 @@ public class PlayerController : MonoBehaviour
             idleFloatScript.enabled = false;
 
         yield return StartCoroutine(ZoomAndFadeSprite());
-        fadeManager.PlayFadeOutAndLoadScene(SceneManager.GetActiveScene().name);
+        fadeManager.PlayFadeOutAndLoadScene(sceneName);
         yield return new WaitForSeconds(fadeManager.fadeDuration);
         isBlocked = false;
     }
-
 
     private IEnumerator ZoomAndFadeSprite()
     {
