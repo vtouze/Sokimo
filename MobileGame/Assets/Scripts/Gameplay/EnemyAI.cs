@@ -92,4 +92,9 @@ public class EnemyAI : MonoBehaviour
     {
         return groundTilemap.HasTile(pos) && !topTilemap.HasTile(pos);
     }
+
+    private void Die()
+    {
+        Destroy(gameObject);
+    }
 }

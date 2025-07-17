@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private FadeManager fadeManager;
 
+    private bool isDead = false;
+
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
@@ -98,6 +100,8 @@ public class PlayerController : MonoBehaviour
 
     private void TryMove(Vector3Int direction)
     {
+        if (isDead) return;
+
         Vector3Int targetPos = currentGridPos + direction;
 
         if (groundTilemap.HasTile(targetPos) && !topTilemap.HasTile(targetPos))
@@ -142,13 +146,17 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DeathSequence()
     {
+        isDead = true;
+
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
 
         yield return StartCoroutine(ZoomAndFadeSprite());
         fadeManager.PlayFadeOutAndLoadScene(SceneManager.GetActiveScene().name);
         yield return new WaitForSeconds(fadeManager.fadeDuration);
+        isDead = false;
     }
+
 
     private IEnumerator ZoomAndFadeSprite()
     {
