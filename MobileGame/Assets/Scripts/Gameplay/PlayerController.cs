@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private float minSwipeDistance = 50f;
 
     [SerializeField] private SpriteRenderer spriteRenderer;
-    private IdleFloat idleFloatScript;
+    [SerializeField] private IdleFloat idleFloatScript;
 
     [SerializeField] private FadeManager fadeManager;
 
@@ -33,13 +33,6 @@ public class PlayerController : MonoBehaviour
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
         transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
-
-        if (mainCamera == null)
-            mainCamera = Camera.main;
-
-        idleFloatScript = GetComponentInChildren<IdleFloat>();
-        if (idleFloatScript == null)
-            Debug.LogWarning("IdleFloat script not found on Player.");
     }
 
     void Update()
@@ -103,19 +96,81 @@ public class PlayerController : MonoBehaviour
         if (isDead) return;
 
         Vector3Int targetPos = currentGridPos + direction;
+        Vector3 targetWorldPos = groundTilemap.GetCellCenterWorld(targetPos);
 
-        if (groundTilemap.HasTile(targetPos) && !topTilemap.HasTile(targetPos))
+        if (!groundTilemap.HasTile(targetPos))
+            return;
+
+        if (topTilemap.HasTile(targetPos))
+            return;
+
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(targetWorldPos, 0.1f);
+        Door door = null;
+        foreach (var col in colliders)
+        {
+            door = col.GetComponent<Door>();
+            if (door != null)
+                break;
+        }
+
+        var itemSystem = GetComponent<PlayerItemSystem>();
+
+        if (door != null)
+        {
+            if (door.IsLocked)
+            {
+                if (itemSystem != null && itemSystem.HasKey)
+                {
+                    door.OpenDoor();
+                    itemSystem.ConsumeKey();
+
+                    currentGridPos = targetPos;
+                    transform.position = targetWorldPos;
+                    lastMoveTime = Time.time;
+                }
+            }
+            else
+            {
+                currentGridPos = targetPos;
+                transform.position = targetWorldPos;
+                lastMoveTime = Time.time;
+            }
+        }
+        else
         {
             currentGridPos = targetPos;
-            transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+            transform.position = targetWorldPos;
             lastMoveTime = Time.time;
 
             if (EnemyOnSameTile(currentGridPos))
             {
-                StartCoroutine(DeathSequence());
+                if (itemSystem != null && itemSystem.HasSword)
+                {
+                    KillEnemiesOnSameTile(currentGridPos);
+                    itemSystem.ConsumeSword();
+                }
+                else
+                {
+                    StartCoroutine(DeathSequence());
+                }
             }
         }
     }
+
+
+    private void KillEnemiesOnSameTile(Vector3Int pos)
+    {
+        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        foreach (var enemy in enemies)
+        {
+            Vector3Int enemyGridPos = groundTilemap.WorldToCell(enemy.transform.position);
+            if (enemyGridPos == pos)
+            {
+                Destroy(enemy.gameObject);
+            }
+        }
+    }
+
 
     public void TeleportTo(Vector3 worldPosition)
     {

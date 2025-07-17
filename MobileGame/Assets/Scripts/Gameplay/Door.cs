@@ -1,25 +1,12 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class Door : MonoBehaviour
 {
-    private bool isOpen = false;
+    public bool IsLocked = true;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OpenDoor()
     {
-        if (isOpen) return;
-
-        PlayerItemSystem itemSystem = other.GetComponent<PlayerItemSystem>();
-        if (itemSystem != null && itemSystem.HasKey)
-        {
-            itemSystem.ConsumeKey();
-            OpenDoor();
-        }
-    }
-
-    private void OpenDoor()
-    {
-        isOpen = true;
+        IsLocked = false;
         Destroy(gameObject);
     }
 }

@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemType: 1
-  itemVisualPrefab: {fileID: 0}
+  itemVisualPrefab: {fileID: 17554645356606510}
 --- !u!1 &1832393122072441263
 GameObject:
   m_ObjectHideFlags: 0
