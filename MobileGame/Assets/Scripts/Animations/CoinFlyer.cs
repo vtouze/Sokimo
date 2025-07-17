@@ -7,10 +7,12 @@ public class CoinFlyer : MonoBehaviour
     [SerializeField] private float pulseScale = 1.2f;
     [SerializeField] private float pulseDuration = 0.1f;
 
-    [SerializeField] private string coinIconName = "Coin_Image"; // Nom de l'icône de la pièce dans l'UI
+    [SerializeField] private string coinIconName = "Coin_Image";
+    [SerializeField] private string coinTextName = "Coin_Text";  // Name of the text GameObject
 
     private RectTransform flyerRect;
     private RectTransform uiCoinIcon;
+    private RectTransform uiTextToPulse;
     private Canvas canvas;
 
     void Awake()
@@ -23,11 +25,14 @@ public class CoinFlyer : MonoBehaviour
         {
             uiCoinIcon = iconGO.GetComponent<RectTransform>();
         }
+
+        GameObject textGO = GameObject.Find(coinTextName);
+        if (textGO != null)
+        {
+            uiTextToPulse = textGO.GetComponent<RectTransform>();
+        }
     }
 
-    /// <summary>
-    /// Lance depuis une position monde (ex : pièce ramassée)
-    /// </summary>
     public void LaunchToUIFromWorld()
     {
         if (canvas == null || uiCoinIcon == null) return;
@@ -46,9 +51,6 @@ public class CoinFlyer : MonoBehaviour
         MoveToTarget();
     }
 
-    /// <summary>
-    /// Lance depuis un RectTransform UI (ex : bouton boutique)
-    /// </summary>
     public void LaunchToUIFromUI(RectTransform fromUI)
     {
         if (canvas == null || uiCoinIcon == null) return;
@@ -80,6 +82,12 @@ public class CoinFlyer : MonoBehaviour
         LeanTween.move(flyerRect, targetLocalPoint, moveDuration).setEaseInOutQuad().setOnComplete(() =>
         {
             LeanTween.scale(uiCoinIcon, Vector3.one * pulseScale, pulseDuration).setLoopPingPong(1);
+
+            if (uiTextToPulse != null)
+            {
+                LeanTween.scale(uiTextToPulse, Vector3.one * pulseScale, pulseDuration).setLoopPingPong(1);
+            }
+
             CoinManager.Instance?.AddCoin();
             Destroy(gameObject);
         });

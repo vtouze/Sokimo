@@ -20,10 +20,15 @@ public class IdleFloat : MonoBehaviour
     private Vector3 startLocalEuler;
     private Vector3 startScale;
 
+    [SerializeField] private bool isInGame = true;
+
     void Start()
     {
-        transform.localPosition = Vector3.zero;
-        transform.localEulerAngles = Vector3.zero;
+        if (isInGame)
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localEulerAngles = Vector3.zero;
+        }
 
         startLocalPos = transform.localPosition;
         startLocalEuler = transform.localEulerAngles;

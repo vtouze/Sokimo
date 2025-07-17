@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public Tilemap groundTilemap;
     public Tilemap topTilemap;
-    [SerializeField] private float moveCooldown = 0.2f;
+    [SerializeField] private float moveCooldown = 0.1f;
 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float zoomAmount = 3f;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private FadeManager fadeManager;
 
-    private bool isDead = false;
+    private bool isBlocked = false;
 
     void Start()
     {
@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     private void TryMove(Vector3Int direction)
     {
-        if (isDead) return;
+        if (isBlocked) return;
 
         Vector3Int targetPos = currentGridPos + direction;
         Vector3 targetWorldPos = groundTilemap.GetCellCenterWorld(targetPos);
@@ -201,7 +201,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DeathSequence()
     {
-        isDead = true;
+        isBlocked = true;
 
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
@@ -209,7 +209,7 @@ public class PlayerController : MonoBehaviour
         yield return StartCoroutine(ZoomAndFadeSprite());
         fadeManager.PlayFadeOutAndLoadScene(SceneManager.GetActiveScene().name);
         yield return new WaitForSeconds(fadeManager.fadeDuration);
-        isDead = false;
+        isBlocked = false;
     }
 
 
@@ -242,6 +242,7 @@ public class PlayerController : MonoBehaviour
 
     public void PlayPortalAnimation(Vector3Int targetGridPos, System.Action onComplete = null)
     {
+        isBlocked = true;
         float duration = 0.5f;
 
         Vector3 originalScale = transform.localScale;
@@ -257,6 +258,7 @@ public class PlayerController : MonoBehaviour
             LeanTween.rotate(gameObject, originalRotation.eulerAngles, duration).setEaseInOutSine().setOnComplete(() =>
             {
                 onComplete?.Invoke();
+                isBlocked = false;
             });
         });
     }
