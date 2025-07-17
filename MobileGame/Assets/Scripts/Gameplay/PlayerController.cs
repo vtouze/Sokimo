@@ -5,15 +5,15 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private Tilemap groundTilemap;
-    [SerializeField] private Tilemap topTilemap;
+    public Tilemap groundTilemap;
+    public Tilemap topTilemap;
     [SerializeField] private float moveCooldown = 0.2f;
 
     [SerializeField] private Camera mainCamera;
     [SerializeField] private float zoomAmount = 3f;
     [SerializeField] private float zoomDuration = 0.5f;
 
-    [SerializeField] private CanvasGroup fadeCanvasGroup; // CanvasGroup avec une image noire en fullscreen
+    [SerializeField] private CanvasGroup fadeCanvasGroup;
 
     private Vector3Int currentGridPos;
     private float lastMoveTime = 0f;
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
         if (mainCamera == null)
             mainCamera = Camera.main;
 
-        idleFloatScript = GetComponent<IdleFloat>();
+        idleFloatScript = GetComponentInChildren<IdleFloat>();
         if (idleFloatScript == null)
             Debug.LogWarning("IdleFloat script not found on Player.");
     }
@@ -106,14 +106,19 @@ public class PlayerController : MonoBehaviour
             transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
             lastMoveTime = Time.time;
 
-            // Vérifier si un ennemi est sur la même case
             if (EnemyOnSameTile(currentGridPos))
             {
-                // Démarrer la disparition + zoom + reload
                 StartCoroutine(DeathSequence());
             }
         }
     }
+
+    public void TeleportTo(Vector3 worldPosition)
+    {
+        transform.position = worldPosition;
+        currentGridPos = groundTilemap.WorldToCell(worldPosition);
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -140,15 +145,8 @@ public class PlayerController : MonoBehaviour
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
 
-        // Supprime le fadeCanvasGroup alpha ici (plus nécessaire)
-
-        // Zoom et disparition du sprite restent (ou tu peux les intégrer dans le fadeManager si tu veux)
         yield return StartCoroutine(ZoomAndFadeSprite());
-
-        // Ensuite lance le fadeOut avec FadeManager et recharge scène
         fadeManager.PlayFadeOutAndLoadScene(SceneManager.GetActiveScene().name);
-
-        // Attend la durée du fade pour éviter que le reste du code ne continue trop tôt (optionnel)
         yield return new WaitForSeconds(fadeManager.fadeDuration);
     }
 
@@ -177,5 +175,26 @@ public class PlayerController : MonoBehaviour
             spriteRenderer.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
             yield return null;
         }
+    }
+
+    public void PlayPortalAnimation(Vector3Int targetGridPos, System.Action onComplete = null)
+    {
+        float duration = 0.5f;
+
+        Vector3 originalScale = transform.localScale;
+        Quaternion originalRotation = transform.rotation;
+
+        LeanTween.scale(gameObject, originalScale * 0.5f, duration).setEaseInOutSine();
+        LeanTween.rotateZ(gameObject, transform.eulerAngles.z + 180f, duration).setEaseInOutSine().setOnComplete(() =>
+        {
+            currentGridPos = targetGridPos;
+            transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+
+            LeanTween.scale(gameObject, originalScale, duration).setEaseInOutSine();
+            LeanTween.rotate(gameObject, originalRotation.eulerAngles, duration).setEaseInOutSine().setOnComplete(() =>
+            {
+                onComplete?.Invoke();
+            });
+        });
     }
 }
