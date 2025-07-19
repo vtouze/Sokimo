@@ -164,6 +164,16 @@ public class PlayerController : MonoBehaviour
                 return;
             }
         }
+
+        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        foreach (var enemy in enemies)
+        {
+            Vector3Int playerPos = currentGridPos;
+            Vector3Int enemyPos = groundTilemap.WorldToCell(enemy.transform.position);
+            int dist = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
+            enemy.HandlePatrollerLogic(playerPos, dist);
+
+        }
     }
 
 
