@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.Video;
+using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
@@ -8,10 +10,19 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject shopMenu;
     [SerializeField] private GameObject levelSelectionMenu;
 
+    [Header("Background Video")]
+    [SerializeField] private VideoPlayer backgroundVideo;
+
     private GameObject currentMenu;
 
     private void Start()
     {
+        if (backgroundVideo != null)
+        {
+            backgroundVideo.isLooping = true;
+            backgroundVideo.Play();
+        }
+
         ShowMenu(mainMenu);
     }
 
