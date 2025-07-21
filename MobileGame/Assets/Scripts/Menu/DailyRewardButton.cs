@@ -45,13 +45,11 @@ public class DailyRewardButton : MonoBehaviour
     {
         if (!isReady) return;
 
-        Debug.Log("1 coin added!");
         CoinManager.Instance?.AddCoin();
 
         nextRewardTime = DateTime.UtcNow.AddSeconds(cooldownDuration);
         SaveNextRewardTime();
 
-        // 🔔 Schedule notification when reward goes on cooldown
         NotificationManager.Instance?.ScheduleDailyRewardNotification(nextRewardTime);
 
         isReady = false;

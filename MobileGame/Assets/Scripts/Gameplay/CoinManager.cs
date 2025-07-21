@@ -62,9 +62,16 @@ public class CoinManager : MonoBehaviour
         UpdateCoinText();
     }
 
-    void ResetCoinPrefs()
+    public void ResetCoinPrefs()
     {
         PlayerPrefs.DeleteKey("Coins");
+
+        foreach (Coin coin in FindObjectsOfType<Coin>())
+        {
+            if (!string.IsNullOrEmpty(coin.CoinID))
+                PlayerPrefs.DeleteKey("CoinCollected_" + coin.CoinID);
+        }
+
         PlayerPrefs.Save();
     }
 }

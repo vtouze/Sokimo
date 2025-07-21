@@ -3,6 +3,7 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [SerializeField] private string coinID;
+    public string CoinID => coinID;
     [SerializeField] private GameObject coinFlyerPrefab;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
@@ -26,7 +27,6 @@ public class Coin : MonoBehaviour
         PlayerPrefs.SetInt("CoinCollected_" + coinID, 1);
         PlayerPrefs.Save();
 
-        CoinManager.Instance.AddCoin();
         SpawnCoinFlyer();
         Destroy(gameObject);
     }

@@ -85,6 +85,24 @@ public class NotificationManager : MonoBehaviour
         AndroidNotificationCenter.SendNotification(notification, "daily_reward_channel");
     }
 
+    public void ScheduleAdRewardNotification(DateTime triggerTime, int delayInSeconds = 2)
+    {
+        if (!NotificationsEnabled)
+        {
+            Debug.Log("Ad Reward notification not scheduled: disabled by user.");
+            return;
+        }
+
+        var notification = new AndroidNotification()
+        {
+            Title = "💰 Watch an Ad, Get a Coin!",
+            Text = "Your next rewarded ad is ready to watch!",
+            FireTime = triggerTime.AddSeconds(delayInSeconds)
+        };
+
+        AndroidNotificationCenter.SendNotification(notification, "daily_reward_channel");
+    }
+
     public void OpenAppNotificationSettings()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR

@@ -6,7 +6,7 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     [SerializeField] string _androidGameId;
     [SerializeField] string _iOSGameId;
     [SerializeField] bool _testMode = false;
-    [SerializeField] private AdsInterstitial adsInterstitial;
+    [SerializeField] private AdsRewarded adsRewarded;
 
     private string _gameId;
 
@@ -38,7 +38,7 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     {
         Debug.Log("Unity Ads initialization complete.");
         adsInitialized = true; // Set flag true on success
-        adsInterstitial.LoadAd();
+        adsRewarded.LoadAd();
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
