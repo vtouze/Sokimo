@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviour
             Vector3Int enemyGridPos = groundTilemap.WorldToCell(enemy.transform.position);
             if (enemyGridPos == pos)
             {
-                Destroy(enemy.gameObject);
+                enemy.AnimateEnemyDeath(enemy.gameObject);
             }
         }
     }

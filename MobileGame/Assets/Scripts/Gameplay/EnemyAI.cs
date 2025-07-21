@@ -38,7 +38,6 @@ public class EnemyAI : MonoBehaviour
         currentGridPos = groundTilemap.WorldToCell(transform.position);
         transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
 
-        // Assign correct starting sprite
         if (spriteRenderer != null)
         {
             if (enemyType == EnemyType.Patroller && chaseSprite != null)
@@ -124,17 +123,26 @@ public class EnemyAI : MonoBehaviour
         bool hasGround = groundTilemap.HasTile(pos);
         bool hasObstacle = topTilemap.HasTile(pos);
 
-        // Debug to help track unexpected results
-        if (!hasGround)
-            Debug.LogWarning($"[EnemyAI] No ground at {pos}");
-        if (hasObstacle)
-            Debug.LogWarning($"[EnemyAI] Obstacle on topTilemap at {pos}");
-
         return hasGround && !hasObstacle;
     }
 
-    private void Die()
+    public void AnimateEnemyDeath(GameObject enemy)
     {
-        Destroy(gameObject);
+        Collider2D col = enemy.GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
+
+        MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
+        foreach (var script in scripts)
+            script.enabled = false;
+
+        LeanTween.scale(enemy, Vector3.zero, 0.4f).setEase(LeanTweenType.easeInBack);
+        SpriteRenderer sr = enemy.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            LeanTween.alpha(enemy, 0f, 0.4f).setEase(LeanTweenType.easeInQuad);
+        }
+
+        LeanTween.delayedCall(enemy, 0.45f, () => Destroy(enemy));
     }
 }
