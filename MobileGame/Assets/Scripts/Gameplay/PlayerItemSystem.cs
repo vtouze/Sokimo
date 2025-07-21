@@ -137,7 +137,6 @@ public class PlayerItemSystem : MonoBehaviour
         LeanTween.delayedCall(0.6f, () =>
         {
             PickupItem(newItem, newVisualPrefab, pickupStart);
-            //Destroy(worldItem);
             worldItem.SetActive(false);
 
             if (playerController != null)

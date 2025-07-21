@@ -225,11 +225,19 @@ public class PlayerController : MonoBehaviour
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
 
+        int originalSortingOrder = spriteRenderer.sortingOrder;
+
+        spriteRenderer.sortingOrder = 100;
+
         yield return StartCoroutine(ZoomAndFadeSprite());
+
         fadeManager.PlayFadeOutAndLoadScene(sceneName);
         yield return new WaitForSeconds(fadeManager.fadeDuration);
+
+        spriteRenderer.sortingOrder = originalSortingOrder;
         BlockMovement(false);
     }
+
 
     private IEnumerator ZoomAndFadeSprite()
     {

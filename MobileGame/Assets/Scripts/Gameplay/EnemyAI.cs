@@ -132,6 +132,10 @@ public class EnemyAI : MonoBehaviour
         if (col != null)
             col.enabled = false;
 
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        if (playerController != null)
+            playerController.BlockMovement(true);
+
         MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
         foreach (var script in scripts)
             script.enabled = false;
@@ -144,5 +148,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         LeanTween.delayedCall(enemy, 0.45f, () => Destroy(enemy));
+            if (playerController != null)
+            playerController.BlockMovement(false);
     }
 }
