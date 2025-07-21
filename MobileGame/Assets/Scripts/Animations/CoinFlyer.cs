@@ -8,7 +8,7 @@ public class CoinFlyer : MonoBehaviour
     [SerializeField] private float pulseDuration = 0.1f;
 
     [SerializeField] private string coinIconName = "Coin_Image";
-    [SerializeField] private string coinTextName = "Coin_Text";  // Name of the text GameObject
+    [SerializeField] private string coinTextName = "Coin_Text";
 
     private RectTransform flyerRect;
     private RectTransform uiCoinIcon;

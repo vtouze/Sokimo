@@ -2716,7 +2716,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4388f7435f59a3c4a87ec2ff8c73edb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinID: test_01
   coinFlyerPrefab: {fileID: 201416877134556758, guid: 385027991a9a76b4bacd7d8eb19321fa, type: 3}
+  spriteRenderer: {fileID: 347731486}
 --- !u!4 &1496668126
 Transform:
   m_ObjectHideFlags: 0
@@ -3290,7 +3292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4388f7435f59a3c4a87ec2ff8c73edb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  coinID: test_02
   coinFlyerPrefab: {fileID: 201416877134556758, guid: 385027991a9a76b4bacd7d8eb19321fa, type: 3}
+  spriteRenderer: {fileID: 638926369}
 --- !u!4 &1705942557
 Transform:
   m_ObjectHideFlags: 0

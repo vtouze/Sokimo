@@ -18,9 +18,9 @@ public class CoinManager : MonoBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Keep across scenes
+        DontDestroyOnLoad(gameObject);
 
-        currentCoins = PlayerPrefs.GetInt("Coins", 0); // Load saved coins
+        currentCoins = PlayerPrefs.GetInt("Coins", 0);
         UpdateCoinText();
     }
 
@@ -56,7 +56,7 @@ public class CoinManager : MonoBehaviour
             coinText.text = currentCoins.ToString();
     }
 
-    public void RegisterCoinText(TMP_Text text) // Optional for HUD/shop UIs
+    public void RegisterCoinText(TMP_Text text)
     {
         coinText = text;
         UpdateCoinText();

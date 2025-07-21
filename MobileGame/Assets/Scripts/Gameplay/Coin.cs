@@ -2,11 +2,31 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
+    [SerializeField] private string coinID;
     [SerializeField] private GameObject coinFlyerPrefab;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    private bool alreadyCollected = false;
+
+    void Start()
+    {
+        if (PlayerPrefs.GetInt("CoinCollected_" + coinID, 0) == 1)
+        {
+            alreadyCollected = true;
+            DisableVisual();
+        }
+    }
 
     public void Collect()
     {
-        // Optional: play sound, disable visuals, etc.
+        if (alreadyCollected) return;
+
+        alreadyCollected = true;
+
+        PlayerPrefs.SetInt("CoinCollected_" + coinID, 1);
+        PlayerPrefs.Save();
+
+        CoinManager.Instance.AddCoin();
         SpawnCoinFlyer();
         Destroy(gameObject);
     }
@@ -22,5 +42,19 @@ public class Coin : MonoBehaviour
         {
             coinFlyer.LaunchToUIFromWorld();
         }
+    }
+
+    private void DisableVisual()
+    {
+        if (spriteRenderer != null)
+        {
+            Color fadedColor = spriteRenderer.color;
+            fadedColor.a = 0.3f;
+            spriteRenderer.color = fadedColor;
+        }
+
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
     }
 }
