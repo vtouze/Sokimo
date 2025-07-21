@@ -106,4 +106,42 @@ public class PlayerItemSystem : MonoBehaviour
         if (keyHolder != null) keyHolder.gameObject.SetActive(false);
         if (swordHolder != null) swordHolder.gameObject.SetActive(false);
     }
+
+    public void AnimatePickup(GameObject worldItem, ItemType newItem, GameObject newVisualPrefab)
+    {
+        Vector3 pickupStart = worldItem.transform.position;
+
+        Transform targetHolder = newItem switch
+        {
+            ItemType.Key => keyHolder,
+            ItemType.Sword => swordHolder,
+            _ => null
+        };
+
+        PlayerController playerController = GetComponent<PlayerController>();
+        if (playerController != null)
+            playerController.BlockMovement(true);
+
+        worldItem.GetComponent<Collider2D>().enabled = false;
+
+        Vector3 pickupEnd = targetHolder.position;
+        Vector3 jumpUp = pickupStart + new Vector3(0, 0.5f, 0);
+
+        LeanTween.move(worldItem, jumpUp, 0.2f).setOnComplete(() =>
+        {
+            LeanTween.move(worldItem, pickupEnd, 0.3f).setEase(LeanTweenType.easeInBack);
+        });
+
+        LeanTween.scale(worldItem, worldItem.transform.localScale * 1.2f, 0.2f).setLoopPingPong(1);
+
+        LeanTween.delayedCall(0.6f, () =>
+        {
+            PickupItem(newItem, newVisualPrefab, pickupStart);
+            //Destroy(worldItem);
+            worldItem.SetActive(false);
+
+            if (playerController != null)
+                playerController.BlockMovement(false);
+        });
+    }
 }

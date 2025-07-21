@@ -220,7 +220,7 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator EndingSequence(string sceneName)
     {
-        isBlocked = true;
+        BlockMovement(true);
 
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
@@ -228,7 +228,7 @@ public class PlayerController : MonoBehaviour
         yield return StartCoroutine(ZoomAndFadeSprite());
         fadeManager.PlayFadeOutAndLoadScene(sceneName);
         yield return new WaitForSeconds(fadeManager.fadeDuration);
-        isBlocked = false;
+        BlockMovement(false);
     }
 
     private IEnumerator ZoomAndFadeSprite()
@@ -260,7 +260,7 @@ public class PlayerController : MonoBehaviour
 
     public void PlayPortalAnimation(Vector3Int targetGridPos, System.Action onComplete = null)
     {
-        isBlocked = true;
+        BlockMovement(true);
         float duration = 0.5f;
 
         Vector3 originalScale = transform.localScale;
@@ -276,8 +276,13 @@ public class PlayerController : MonoBehaviour
             LeanTween.rotate(gameObject, originalRotation.eulerAngles, duration).setEaseInOutSine().setOnComplete(() =>
             {
                 onComplete?.Invoke();
-                isBlocked = false;
+                BlockMovement(false);
             });
         });
+    }
+
+    public void BlockMovement(bool value)
+    {
+        isBlocked = value;
     }
 }

@@ -9,20 +9,13 @@ public class ItemPickup : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (pickedUp)
-        {
-            return;
-        }
+        if (pickedUp) return;
 
         PlayerItemSystem itemSystem = other.GetComponent<PlayerItemSystem>();
         if (itemSystem != null)
         {
-            Vector3 pickupPosition = transform.position;
-
-            itemSystem.PickupItem(itemType, itemVisualPrefab, pickupPosition);
-
             pickedUp = true;
-            gameObject.SetActive(false);
+            itemSystem.AnimatePickup(gameObject, itemType, itemVisualPrefab);
         }
     }
 
