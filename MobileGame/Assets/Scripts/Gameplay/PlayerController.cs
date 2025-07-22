@@ -221,6 +221,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator EndingSequence(string sceneName)
     {
         BlockMovement(true);
+        //DeviceShakeManager.Instance?.Shake(ShakeType.Medium);
 
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;

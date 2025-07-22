@@ -27,6 +27,7 @@ public class Coin : MonoBehaviour
         PlayerPrefs.SetInt("CoinCollected_" + coinID, 1);
         PlayerPrefs.Save();
 
+        //DeviceShakeManager.Instance?.Shake(ShakeType.Light);
         SpawnCoinFlyer();
         Destroy(gameObject);
     }
