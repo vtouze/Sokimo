@@ -7,6 +7,8 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     [SerializeField] string _iOSGameId;
     [SerializeField] bool _testMode = false;
     [SerializeField] private AdsRewarded adsRewarded;
+    [SerializeField] private AdsInterstitial adsInterstitial;
+
 
     private string _gameId;
 
@@ -37,8 +39,25 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void OnInitializationComplete()
     {
         Debug.Log("Unity Ads initialization complete.");
-        adsInitialized = true; // Set flag true on success
-        adsRewarded.LoadAd();
+        adsInitialized = true;
+
+        if (adsRewarded != null)
+        {
+            adsRewarded.LoadAd();
+        }
+        else
+        {
+            Debug.LogWarning("AdsRewarded reference is not assigned. Skipping LoadAd.");
+        }
+
+        if (adsInterstitial != null)
+        {
+            adsInterstitial.LoadAd();
+        }
+        else
+        {
+            Debug.LogWarning("AdsInterstitial reference is not assigned. Skipping LoadAd.");
+        }
     }
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)

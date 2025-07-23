@@ -19,12 +19,10 @@ public class LevelSelectionManager : MonoBehaviour
     void UpdateLevelButtons()
     {
         int pieces = CoinManager.Instance?.CurrentCoins ?? 0;
-        Debug.Log($"You have {pieces} pieces. Total levels: {levels.Count}");
 
         for (int i = 0; i < levels.Count; i++)
         {
             LevelData level = levels[i];
-            Debug.Log($"Setting up Level {i + 1}, requires {level.requiredPieces} pieces — button: {level.buttonObject.name}");
 
             bool isUnlocked = pieces >= level.requiredPieces;
             Button btn = level.buttonObject.GetComponent<Button>();
@@ -34,16 +32,15 @@ public class LevelSelectionManager : MonoBehaviour
             {
                 level.lockImage.gameObject.SetActive(true);
                 level.Level_Text.gameObject.SetActive(true);
-                level.piecesContainer.SetActive(false); // ✅ Hide container when unlocked
+                level.piecesContainer.SetActive(false);
             }
             else
             {
                 level.lockImage.sprite = level.lockSprite;
                 level.lockImage.gameObject.SetActive(true);
                 level.Level_Text.gameObject.SetActive(false);
-                level.piecesContainer.SetActive(true);  // ✅ Show container when locked
+                level.piecesContainer.SetActive(true);
 
-                // ✅ Optional: Update text inside the container if needed
                 TMP_Text piecesText = level.piecesContainer.GetComponentInChildren<TMP_Text>();
                 if (piecesText != null)
                     piecesText.text = $"{level.requiredPieces}";

@@ -4512,6 +4512,7 @@ GameObject:
   - component: {fileID: 720809628}
   - component: {fileID: 720809627}
   - component: {fileID: 720809630}
+  - component: {fileID: 720809631}
   m_Layer: 0
   m_Name: AdsInitializer
   m_TagString: Untagged
@@ -4585,6 +4586,20 @@ MonoBehaviour:
   _bannerPosition: 1
   _androidAdUnitId: Banner_Android
   _iOSAdUnitId: Banner_iOS
+--- !u!114 &720809631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720809626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bc0ed5317edf8b43aafda4238ca8818, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidAdUnitId: Interstitial_Android
+  _iOSAdUnitId: Interstitial_iOS
 --- !u!1 &741119681
 GameObject:
   m_ObjectHideFlags: 0

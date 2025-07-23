@@ -2,6 +2,7 @@
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.Advertisements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private IdleFloat idleFloatScript;
 
     [SerializeField] private FadeManager fadeManager;
+
+    [SerializeField] private AdsInterstitial adsInterstitial;
 
     private bool isBlocked = false;
 
@@ -223,22 +226,30 @@ public class PlayerController : MonoBehaviour
     private IEnumerator EndingSequence(string sceneName)
     {
         BlockMovement(true);
-        //DeviceShakeManager.Instance?.Shake(ShakeType.Medium);
 
         if (idleFloatScript != null)
             idleFloatScript.enabled = false;
 
         int originalSortingOrder = spriteRenderer.sortingOrder;
-
         spriteRenderer.sortingOrder = 100;
 
         yield return StartCoroutine(ZoomAndFadeSprite());
 
-        fadeManager.PlayFadeOutAndLoadScene(sceneName);
+        // Step 1: Play fade-out first
+        fadeManager.PlayRawFadeOut();
         yield return new WaitForSeconds(fadeManager.fadeDuration);
 
-        spriteRenderer.sortingOrder = originalSortingOrder;
-        BlockMovement(false);
+        // Step 2: Show the ad during black screen
+        if (adsInterstitial != null)
+        {
+            bool adFinished = false;
+            adsInterstitial.ShowAdWithCallback(() => adFinished = true);
+            while (!adFinished)
+                yield return null;
+        }
+
+        // Step 3: Load the next scene and fade in
+        SceneManager.LoadScene(sceneName);
     }
 
 

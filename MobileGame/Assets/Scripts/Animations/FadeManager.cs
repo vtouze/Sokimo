@@ -4,7 +4,7 @@ using System.Collections;
 
 public class FadeManager : MonoBehaviour
 {
-    [SerializeField] private GameObject fadeObject; // ← le GameObject à activer/désactiver
+    [SerializeField] private GameObject fadeObject;
     [SerializeField] private Animator fadeAnimator;
     [SerializeField] private string fadeOutTrigger = "FadeOut";
     [SerializeField] private string fadeInTrigger = "FadeIn";
@@ -66,4 +66,15 @@ public class FadeManager : MonoBehaviour
         yield return new WaitForSeconds(fadeDuration);
         fadeObject.SetActive(false);
     }
+
+    public void PlayRawFadeOut()
+    {
+        if (fadeObject != null)
+        {
+            fadeObject.SetActive(true);
+            fadeAnimator.ResetTrigger(fadeOutTrigger);
+            fadeAnimator.SetTrigger(fadeInTrigger);
+        }
+    }
+
 }
