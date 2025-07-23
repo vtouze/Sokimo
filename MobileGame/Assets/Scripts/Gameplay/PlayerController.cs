@@ -151,6 +151,7 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
+                    CoinManager.Instance?.ClearSessionCoins();
                     StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
                 }
             }
@@ -160,6 +161,7 @@ public class PlayerController : MonoBehaviour
         {
             if (col.CompareTag("RedFlag"))
             {
+                CoinManager.Instance?.CommitSessionCoins();
                 StartCoroutine(EndingSequence("MainMenu"));
                 return;
             }

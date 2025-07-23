@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,6 +9,9 @@ public class CoinManager : MonoBehaviour
     [SerializeField] private TMP_Text coinText;
 
     private int currentCoins;
+    private int sessionCoins = 0;
+
+    private HashSet<string> sessionCollectedCoinIDs = new HashSet<string>();
 
     private void Awake()
     {
@@ -53,7 +57,7 @@ public class CoinManager : MonoBehaviour
     private void UpdateCoinText()
     {
         if (coinText != null)
-            coinText.text = currentCoins.ToString();
+            coinText.text = (currentCoins + sessionCoins).ToString();
     }
 
     public void RegisterCoinText(TMP_Text text)
@@ -74,4 +78,59 @@ public class CoinManager : MonoBehaviour
 
         PlayerPrefs.Save();
     }
+    public void AddSessionCoin(int amount = 1)
+    {
+        sessionCoins += amount;
+        UpdateCoinText();
+    }
+
+    public void CommitSessionCoins()
+    {
+        currentCoins += sessionCoins;
+        SaveCoins();
+
+        foreach (var id in sessionCollectedCoinIDs)
+        {
+            PlayerPrefs.SetInt("CoinCollected_" + id, 1);
+        }
+
+        PlayerPrefs.Save();
+
+        sessionCoins = 0;
+        sessionCollectedCoinIDs.Clear();
+
+        UpdateCoinText();
+    }
+
+    public void ClearSessionCoins()
+    {
+        sessionCoins = 0;
+        sessionCollectedCoinIDs.Clear();
+        UpdateCoinText();
+    }
+
+    public void RegisterSessionCoin(string coinID)
+    {
+        if (!string.IsNullOrEmpty(coinID))
+        {
+            sessionCollectedCoinIDs.Add(coinID);
+        }
+    }
+
+    public void ResetCoinPrefsFromScene()
+    {
+        foreach (Coin coin in FindObjectsOfType<Coin>())
+        {
+            if (!string.IsNullOrEmpty(coin.CoinID))
+            {
+                PlayerPrefs.DeleteKey("CoinCollected_" + coin.CoinID);
+            }
+        }
+
+        PlayerPrefs.DeleteKey("Coins");
+        PlayerPrefs.Save();
+        Debug.Log("All CoinCollected keys from this scene have been reset.");
+    }
+
+
 }

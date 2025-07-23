@@ -24,14 +24,10 @@ public class Coin : MonoBehaviour
 
         alreadyCollected = true;
 
-        PlayerPrefs.SetInt("CoinCollected_" + coinID, 1);
-        PlayerPrefs.Save();
-
-        //DeviceShakeManager.Instance?.Shake(ShakeType.Light);
+        CoinManager.Instance?.RegisterSessionCoin(coinID);
         SpawnCoinFlyer();
         Destroy(gameObject);
     }
-
     private void SpawnCoinFlyer()
     {
         if (coinFlyerPrefab == null) return;

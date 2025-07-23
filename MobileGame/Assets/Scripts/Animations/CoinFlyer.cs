@@ -88,7 +88,7 @@ public class CoinFlyer : MonoBehaviour
                 LeanTween.scale(uiTextToPulse, Vector3.one * pulseScale, pulseDuration).setLoopPingPong(1);
             }
 
-            CoinManager.Instance?.AddCoin();
+            CoinManager.Instance?.AddSessionCoin();
             Destroy(gameObject);
         });
     }
