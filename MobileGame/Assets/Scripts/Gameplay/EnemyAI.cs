@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class EnemyAI : MonoBehaviour
@@ -26,7 +26,7 @@ public class EnemyAI : MonoBehaviour
         new Vector3Int(-1, 0, 0)
     };
 
-    public enum EnemyType { Sleeper, Patroller }
+    public enum EnemyType { Sleeper, Patroller, Sentinel }
     [SerializeField] private EnemyType enemyType;
 
     [Header("Patrol Settings")]
@@ -49,9 +49,10 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
+        Vector3Int playerPos = groundTilemap.WorldToCell(playerTransform.position);
+
         if (enemyType == EnemyType.Sleeper)
         {
-            Vector3Int playerPos = groundTilemap.WorldToCell(playerTransform.position);
             int dist = ManhattanDistance(currentGridPos, playerPos);
             TryChasePlayer(playerPos, dist);
         }
@@ -150,5 +151,98 @@ public class EnemyAI : MonoBehaviour
         LeanTween.delayedCall(enemy, 0.45f, () => Destroy(enemy));
             if (playerController != null)
             playerController.BlockMovement(false);
+    }
+
+    public void HandleSentinelLogic(Vector3Int playerPos)
+    {
+        if (enemyType != EnemyType.Sentinel) return;
+        if (Time.time - lastMoveTime < moveCooldown) return;
+
+        if (IsInLineOfSight(playerPos))
+        {
+            isChasing = true;
+            if (spriteRenderer != null && chaseSprite != null)
+                spriteRenderer.sprite = chaseSprite;
+
+            Vector3Int direction = Vector3Int.zero;
+
+            if (playerPos.x > currentGridPos.x) direction = Vector3Int.right;
+            else if (playerPos.x < currentGridPos.x) direction = Vector3Int.left;
+            else if (playerPos.y > currentGridPos.y) direction = Vector3Int.up;
+            else if (playerPos.y < currentGridPos.y) direction = Vector3Int.down;
+
+            Vector3Int nextPos = currentGridPos + direction;
+            if (IsWalkable(nextPos))
+            {
+                // Move step by step
+                currentGridPos = nextPos;
+                transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+                lastMoveTime = Time.time;
+
+                // 🔥 Kill other enemies on the same cell
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(
+                    groundTilemap.GetCellCenterWorld(currentGridPos), 0.1f
+                );
+                foreach (var col in colliders)
+                {
+                    EnemyAI otherEnemy = col.GetComponent<EnemyAI>();
+                    if (otherEnemy != null && otherEnemy != this)
+                    {
+                        AnimateEnemyDeath(otherEnemy.gameObject);
+                    }
+                }
+
+                // ⚔️ Kill player if on the same cell
+                if (currentGridPos == playerPos)
+                {
+                    PlayerController player = playerTransform.GetComponent<PlayerController>();
+                    if (player != null)
+                    {
+                        CoinManager.Instance?.ClearSessionCoins();
+                        player.StartCoroutine(player.EndingSequence(
+                            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+                        ));
+                        return;
+                    }
+                }
+
+                // Flip sprite if moving horizontally
+                if (spriteRenderer != null && (direction == Vector3Int.left || direction == Vector3Int.right))
+                {
+                    spriteRenderer.flipX = (direction == Vector3Int.right);
+                }
+            }
+        }
+        else
+        {
+            isChasing = false;
+            if (spriteRenderer != null && idleSprite != null)
+                spriteRenderer.sprite = idleSprite;
+        }
+    }
+
+    private bool IsInLineOfSight(Vector3Int playerPos)
+    {
+        if (playerPos.x == currentGridPos.x)
+        {
+            int step = playerPos.y > currentGridPos.y ? 1 : -1;
+            for (int y = currentGridPos.y + step; y != playerPos.y; y += step)
+            {
+                if (topTilemap.HasTile(new Vector3Int(playerPos.x, y, 0)))
+                    return false;
+            }
+            return true;
+        }
+        else if (playerPos.y == currentGridPos.y)
+        {
+            int step = playerPos.x > currentGridPos.x ? 1 : -1;
+            for (int x = currentGridPos.x + step; x != playerPos.x; x += step)
+            {
+                if (topTilemap.HasTile(new Vector3Int(x, playerPos.y, 0)))
+                    return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

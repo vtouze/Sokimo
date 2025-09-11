@@ -177,6 +177,7 @@ public class PlayerController : MonoBehaviour
             Vector3Int enemyPos = groundTilemap.WorldToCell(enemy.transform.position);
             int dist = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
             enemy.HandlePatrollerLogic(playerPos, dist);
+            enemy.HandleSentinelLogic(playerPos);
 
         }
     }
@@ -223,7 +224,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    private IEnumerator EndingSequence(string sceneName)
+    public IEnumerator EndingSequence(string sceneName)
     {
         BlockMovement(true);
 
@@ -235,11 +236,9 @@ public class PlayerController : MonoBehaviour
 
         yield return StartCoroutine(ZoomAndFadeSprite());
 
-        // Step 1: Play fade-out first
         fadeManager.PlayRawFadeOut();
         yield return new WaitForSeconds(fadeManager.fadeDuration);
 
-        // Step 2: Show the ad during black screen
         if (adsInterstitial != null)
         {
             bool adFinished = false;
@@ -248,7 +247,6 @@ public class PlayerController : MonoBehaviour
                 yield return null;
         }
 
-        // Step 3: Load the next scene and fade in
         SceneManager.LoadScene(sceneName);
     }
 
