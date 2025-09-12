@@ -178,7 +178,6 @@ public class PlayerController : MonoBehaviour
             int dist = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
             enemy.HandlePatrollerLogic(playerPos, dist);
             enemy.HandleSentinelLogic(playerPos);
-
         }
     }
 
@@ -304,5 +303,22 @@ public class PlayerController : MonoBehaviour
     public void BlockMovement(bool value)
     {
         isBlocked = value;
+    }
+
+    public void EnemyCollided(EnemyAI enemy)
+    {
+        var itemSystem = GetComponent<PlayerItemSystem>();
+        if (itemSystem != null && itemSystem.HasSword)
+        {
+            enemy.AnimateEnemyDeath(enemy.gameObject);
+            itemSystem.ConsumeSword();
+        }
+        else
+        {
+            CoinManager.Instance?.ClearSessionCoins();
+            StartCoroutine(EndingSequence(
+                UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+            ));
+        }
     }
 }

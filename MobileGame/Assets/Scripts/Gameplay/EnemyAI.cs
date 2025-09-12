@@ -174,12 +174,10 @@ public class EnemyAI : MonoBehaviour
             Vector3Int nextPos = currentGridPos + direction;
             if (IsWalkable(nextPos))
             {
-                // Move step by step
                 currentGridPos = nextPos;
                 transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
                 lastMoveTime = Time.time;
 
-                // 🔥 Kill other enemies on the same cell
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(
                     groundTilemap.GetCellCenterWorld(currentGridPos), 0.1f
                 );
@@ -192,21 +190,15 @@ public class EnemyAI : MonoBehaviour
                     }
                 }
 
-                // ⚔️ Kill player if on the same cell
                 if (currentGridPos == playerPos)
                 {
                     PlayerController player = playerTransform.GetComponent<PlayerController>();
                     if (player != null)
                     {
-                        CoinManager.Instance?.ClearSessionCoins();
-                        player.StartCoroutine(player.EndingSequence(
-                            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-                        ));
-                        return;
+                        player.EnemyCollided(this);
                     }
                 }
 
-                // Flip sprite if moving horizontally
                 if (spriteRenderer != null && (direction == Vector3Int.left || direction == Vector3Int.right))
                 {
                     spriteRenderer.flipX = (direction == Vector3Int.right);
