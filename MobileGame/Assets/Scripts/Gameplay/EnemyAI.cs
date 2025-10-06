@@ -61,7 +61,6 @@ public class EnemyAI : MonoBehaviour
     public void HandlePatrollerLogic(Vector3Int playerPos, int manhattanDist)
     {
         if (enemyType != EnemyType.Patroller) return;
-
         TryChasePlayer(playerPos, manhattanDist);
 
         if (!isChasing && patrolPoints.Length > 0)
