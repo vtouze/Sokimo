@@ -1149,6 +1149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b853ab03ff930fe4281e415ccc1ad3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  linkedPortal: {fileID: 1513757074}
   playerController: {fileID: 734493162}
 --- !u!1 &519420028
 GameObject:
@@ -3032,6 +3033,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b853ab03ff930fe4281e415ccc1ad3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  linkedPortal: {fileID: 471603494}
   playerController: {fileID: 734493162}
 --- !u!1001 &1529156228
 PrefabInstance:

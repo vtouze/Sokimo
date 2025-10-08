@@ -1,52 +1,36 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider2D))]
 public class Portal : MonoBehaviour
 {
-    private static Portal portalA;
-    private static Portal portalB;
+    [Header("Linked Portal (Set manually in Inspector)")]
+    [SerializeField] private Portal linkedPortal;
 
+    [Header("Player Reference")]
     [SerializeField] private PlayerController playerController;
 
-    // Track which portal the player came from
     private static Portal lastPortalUsed;
 
-    private void Awake()
+    private void Reset()
     {
-        if (portalA == null)
-        {
-            portalA = this;
-        }
-        else if (portalB == null)
-        {
-            portalB = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (portalA == this) portalA = null;
-        if (portalB == this) portalB = null;
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
+            col.isTrigger = true;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (playerController == null) return;
         if (other.gameObject != playerController.gameObject) return;
-        if (portalA == null || portalB == null) return;
+        if (linkedPortal == null) return;
         if (lastPortalUsed == this) return;
 
-        if (this == portalA)
-        {
-            Vector3Int targetGridPos = playerController.groundTilemap.WorldToCell(portalB.transform.position);
-            playerController.PlayPortalAnimation(targetGridPos);
-            lastPortalUsed = portalB;
-        }
-        else if (this == portalB)
-        {
-            Vector3Int targetGridPos = playerController.groundTilemap.WorldToCell(portalA.transform.position);
-            playerController.PlayPortalAnimation(targetGridPos);
-            lastPortalUsed = portalA;
-        }
+        Debug.Log($"[Portal] Entered portal '{name}', teleporting to '{linkedPortal.name}'");
+
+        Vector3Int targetGridPos = playerController.groundTilemap.WorldToCell(linkedPortal.transform.position);
+        playerController.PlayPortalAnimation(targetGridPos);
+
+        lastPortalUsed = linkedPortal;
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -54,10 +38,22 @@ public class Portal : MonoBehaviour
         if (playerController == null) return;
         if (other.gameObject != playerController.gameObject) return;
 
-        // Clear last portal used only when the player exits a portal
         if (lastPortalUsed == this)
         {
+            Debug.Log($"[Portal] Player exited portal '{name}', clearing cooldown");
             lastPortalUsed = null;
         }
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        if (linkedPortal != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, linkedPortal.transform.position);
+            Gizmos.DrawWireSphere(transform.position, 0.2f);
+        }
+    }
+#endif
 }

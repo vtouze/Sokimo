@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private AdsInterstitial adsInterstitial;
 
-    private bool isBlocked = false;
+    [HideInInspector] public bool isBlocked = false;
 
     void Start()
     {
