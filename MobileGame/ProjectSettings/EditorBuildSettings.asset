@@ -60,6 +60,57 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/LVL_17.unity
     guid: b8bc3ac0e68f7454e8c7fb74446ec269
   - enabled: 1
+    path: Assets/Scenes/Levels/LVL_18.unity
+    guid: ddbe4cd1463b1844b91e689ddb4c2fa2
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_19.unity
+    guid: 8b70117068b5d2c4092b16da43a97039
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_20.unity
+    guid: 7d7e5fc6ac1bbb1419634d6f29e2aa0c
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_21.unity
+    guid: 0af16b74e1b94494da6dd430be1d8493
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_22.unity
+    guid: f346e864a5ecbaf45a795bd63327c32c
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_23.unity
+    guid: 5f92b8d6cf93e394f9d00a28b849fc0d
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_24.unity
+    guid: 6cb166ff678762742ac32ff39595320b
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_25.unity
+    guid: 8b85c8caeadc1214a8a49fbc9101d241
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_26.unity
+    guid: 48408bacbd03ddd41aab4b1518d8c035
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_27.unity
+    guid: 0c38f502dbd119147b1e57c82937b866
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_28.unity
+    guid: c57933ef518c0924eb7601bd6966b9a6
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_29.unity
+    guid: 0e5c1624c6e112440b1478edc83d3f1c
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_30.unity
+    guid: 7e1a5b331e1c6634cbc64f55eff4b8a7
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_31.unity
+    guid: 0a00edeced93d1a48aa0e13fc1f3e67e
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_32.unity
+    guid: be0c1ce6c8c0e7e4aa4d20e9a66360c9
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_33.unity
+    guid: ab64c67833b38c4499346109b6bc9296
+  - enabled: 1
+    path: Assets/Scenes/Levels/LVL_34.unity
+    guid: feb58433f00fbdd42ab34650f54536fc
+  - enabled: 1
     path: Assets/Scenes/TestVertical.unity
     guid: 4da891bf0db632e4e933f1c7250ff444
   m_configObjects: {}
