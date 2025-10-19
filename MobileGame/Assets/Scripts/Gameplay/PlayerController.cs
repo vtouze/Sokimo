@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private FadeManager fadeManager;
 
-    [SerializeField] private AdsInterstitial adsInterstitial;
+    //[SerializeField] private AdsInterstitial adsInterstitial;
 
     [HideInInspector] public bool isBlocked = false;
 
@@ -238,13 +238,13 @@ public class PlayerController : MonoBehaviour
         fadeManager.PlayRawFadeOut();
         yield return new WaitForSeconds(fadeManager.fadeDuration);
 
-        if (adsInterstitial != null)
+        /*if (adsInterstitial != null)
         {
             bool adFinished = false;
             adsInterstitial.ShowAdWithCallback(() => adFinished = true);
             while (!adFinished)
                 yield return null;
-        }
+        }*/
 
         SceneManager.LoadScene(sceneName);
     }

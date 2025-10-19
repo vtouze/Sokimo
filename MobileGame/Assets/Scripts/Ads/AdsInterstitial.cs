@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 using UnityEngine.Advertisements;
  
 
@@ -117,4 +117,4 @@ public class AdsInterstitial : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsSh
             LoadAd();           // Try again for next time
         }
     }
-}
+}*/

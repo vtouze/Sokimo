@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿/*using UnityEngine;
 
 public class AdsManager : MonoBehaviour
 {
@@ -90,4 +90,4 @@ public class AdsManager : MonoBehaviour
     }
 
     public bool IsNoAdsEnabled() => noAdsEnabled;
-}
+}*/

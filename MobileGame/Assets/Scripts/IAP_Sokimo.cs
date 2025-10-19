@@ -24,7 +24,7 @@ public class IAP_Sokimo : MonoBehaviour
         }
         else if (id.Equals("noAds"))
         {
-            AdsManager.Instance.OnNoAdsPurchased();
+            //AdsManager.Instance.OnNoAdsPurchased();
             PurchaseCompleteAnimations.Instance?.PlayNoAdsAnimation();
         }
     }
