@@ -142,6 +142,8 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         {
             Debug.Log("User watched the full ad. Grant reward.");
             CoinManager.Instance?.AddCoin();
+            PurchaseCompleteAnimations.Instance?.PlayAdRewardAnimation();
+
 
             nextAdRewardTime = DateTime.UtcNow.AddSeconds(adCooldownDuration);
             SaveNextAdRewardTime();

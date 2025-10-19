@@ -46,6 +46,8 @@ public class DailyRewardButton : MonoBehaviour
         if (!isReady) return;
 
         CoinManager.Instance?.AddCoin();
+        PurchaseCompleteAnimations.Instance?.PlayDailyRewardAnimation();
+
 
         nextRewardTime = DateTime.UtcNow.AddSeconds(cooldownDuration);
         SaveNextRewardTime();
