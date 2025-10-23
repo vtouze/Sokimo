@@ -9286,8 +9286,8 @@ GameObject:
   - component: {fileID: 783502593}
   - component: {fileID: 783502595}
   - component: {fileID: 783502594}
-  - component: {fileID: 783502596}
   - component: {fileID: 783502597}
+  - component: {fileID: 783502598}
   m_Layer: 5
   m_Name: Logo_Image
   m_TagString: Untagged
@@ -9352,26 +9352,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 783502592}
   m_CullTransparentMesh: 1
---- !u!114 &783502596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 783502592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41f54e65c8a1ecc4794a25799805af63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::IdleFloat
-  idleType: 4
-  amplitude: 0.1
-  duration: 0.5
-  rotationAmount: 90
-  xRotationAngle: 15
-  zRotationSpeed: 360
-  scaleAmount: 1.25
-  isInGame: 0
 --- !u!114 &783502597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9387,6 +9367,28 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.78431374}
   m_EffectDistance: {x: 15, y: 15}
   m_UseGraphicAlpha: 1
+--- !u!95 &783502598
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 783502592}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 06ee8cb3a800234409aa0c003fec4bf9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &796445666
 GameObject:
   m_ObjectHideFlags: 0

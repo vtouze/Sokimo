@@ -8,7 +8,6 @@ public class IdleFloat : MonoBehaviour
         FloatAndRotate,
         ScaleAndRotate,
         FloatRotateX,
-        RotateZPingPong
     }
 
     [Header("Animation Type")]
@@ -19,9 +18,9 @@ public class IdleFloat : MonoBehaviour
     [SerializeField] private float duration = 0.5f;
 
     [Header("Rotation Settings")]
-    [SerializeField] private float rotationAmount = 45f; // For Z rotation (left/right)
-    [SerializeField] private float xRotationAngle = 15f;  // For X tilt
-    [SerializeField] private float zRotationSpeed = 360f; // Degrees per second for continuous Z rotation
+    [SerializeField] private float rotationAmount = 45f;
+    [SerializeField] private float xRotationAngle = 15f;
+    [SerializeField] private float zRotationSpeed = 360f;
 
     [Header("Scale Settings")]
     [SerializeField] private float scaleAmount = 1.25f;
@@ -67,9 +66,6 @@ public class IdleFloat : MonoBehaviour
             case IdleType.FloatRotateX:
                 StartFloatAndRotateX();
                 break;
-            case IdleType.RotateZPingPong:
-                StartRotateZPingPong();
-                break;
         }
     }
 
@@ -94,18 +90,6 @@ public class IdleFloat : MonoBehaviour
     {
         AnimateFloat();
         AnimateXRotation();
-    }
-
-    private void StartRotateZPingPong()
-    {
-        LeanTween.rotateLocal(
-                gameObject,
-                new Vector3(0f, 0f, startLocalEuler.z - rotationAmount),
-                duration
-            )
-            .setEaseInOutSine()
-            .setLoopPingPong(1)
-            .setOnComplete(StartRotateZPingPong);
     }
 
     // Animation Helpers (unchanged)
