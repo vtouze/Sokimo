@@ -1,4 +1,4 @@
-/*using System;
+using System;
 using UnityEngine;
 using UnityEngine.Advertisements;
 using TMPro;
@@ -158,4 +158,3 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         LoadAd();
     }
 }
-*/

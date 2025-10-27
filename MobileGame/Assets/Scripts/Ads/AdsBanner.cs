@@ -1,4 +1,4 @@
-﻿/*using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Advertisements;
 using System.Collections;
 
@@ -86,4 +86,4 @@ public class AdsBanner : MonoBehaviour
         Debug.Log("[AdsBanner] Retrying to load banner...");
         Advertisement.Banner.Load(_adUnitId, options);
     }
-}*/
+}

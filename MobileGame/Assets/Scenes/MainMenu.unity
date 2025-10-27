@@ -8833,6 +8833,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2dfa2c3332fa2a245b8913f60b67c6c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _androidAdUnitId: Rewarded_Android
+  _iOSAdUnitId: Rewarded_iOS
+  adCooldownDuration: 10
+  adCooldownText: {fileID: 517513626}
+  adButton: {fileID: 367661502}
+  buttonImage: {fileID: 367661503}
+  activeSprite: {fileID: -140206739, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
+  inactiveSprite: {fileID: 2119750450, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
 --- !u!114 &720809628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8845,6 +8853,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6eb3cf7036f3ee6469e4c2a560b4abcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _androidGameId: 5894437
+  _iOSGameId: 5894436
+  _testMode: 1
+  adsRewarded: {fileID: 720809627}
+  adsInterstitial: {fileID: 720809631}
 --- !u!4 &720809629
 Transform:
   m_ObjectHideFlags: 0
@@ -8872,6 +8885,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65c5c877ce524914d8e241db408c61e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bannerPosition: 4
+  _androidAdUnitId: Banner_Android
+  _iOSAdUnitId: Banner_iOS
 --- !u!114 &720809631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8884,6 +8900,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bc0ed5317edf8b43aafda4238ca8818, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _androidAdUnitId: Interstitial_Android
+  _iOSAdUnitId: Interstitial_iOS
 --- !u!1 &741119681
 GameObject:
   m_ObjectHideFlags: 0
@@ -16674,9 +16692,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1647088048}
+  - {fileID: 783502593}
   - {fileID: 1875609256}
   - {fileID: 1481953399}
-  - {fileID: 783502593}
   m_Father: {fileID: 2018935470}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -20215,6 +20233,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89023e20c35f7864d862e3834db3c1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  adsBanner: {fileID: 0}
+  adsInterstitial: {fileID: 0}
+  resetNoAdsKey: 0
 --- !u!1 &1548121479
 GameObject:
   m_ObjectHideFlags: 0
