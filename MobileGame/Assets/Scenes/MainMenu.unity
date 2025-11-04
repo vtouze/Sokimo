@@ -3518,6 +3518,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 278936267}
   m_CullTransparentMesh: 1
+--- !u!1 &295744985
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 295744986}
+  - component: {fileID: 295744987}
+  m_Layer: 0
+  m_Name: AudioManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &295744986
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295744985}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2104167140}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &295744987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295744985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 691213efe87893c40be6665a52bfe9ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  audioMixer: {fileID: 24100000, guid: ba4f26626be89394ca9fd6ef8d0e1472, type: 2}
 --- !u!1 &296392339
 GameObject:
   m_ObjectHideFlags: 0
@@ -14179,9 +14224,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 858ce9fce5be5c34992cb8a17faec24e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButton: {fileID: 2082422288}
+  sfxToggleButton: {fileID: 525021567}
+  musicToggleButton: {fileID: 1363599387}
   spriteOn: {fileID: 439855269, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
   spriteOff: {fileID: 294188447, guid: 2676ff5c94fc9f1489d59bf570d079e3, type: 3}
+  audioMixer: {fileID: 24100000, guid: ba4f26626be89394ca9fd6ef8d0e1472, type: 2}
 --- !u!1 &1097428175
 GameObject:
   m_ObjectHideFlags: 0
@@ -25039,7 +25086,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 2
           m_FloatArgument: 0
-          m_StringArgument: LVL_01
+          m_StringArgument: TestVertical
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1915940477
@@ -28277,6 +28324,7 @@ Transform:
   - {fileID: 131037874}
   - {fileID: 1685514297}
   - {fileID: 1545757704}
+  - {fileID: 295744986}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2105276125
