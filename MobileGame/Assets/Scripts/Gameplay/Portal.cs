@@ -25,8 +25,6 @@ public class Portal : MonoBehaviour
         if (linkedPortal == null) return;
         if (lastPortalUsed == this) return;
 
-        Debug.Log($"[Portal] Entered portal '{name}', teleporting to '{linkedPortal.name}'");
-
         Vector3Int targetGridPos = playerController.groundTilemap.WorldToCell(linkedPortal.transform.position);
         playerController.PlayPortalAnimation(targetGridPos);
 
@@ -40,7 +38,6 @@ public class Portal : MonoBehaviour
 
         if (lastPortalUsed == this)
         {
-            Debug.Log($"[Portal] Player exited portal '{name}', clearing cooldown");
             lastPortalUsed = null;
         }
     }

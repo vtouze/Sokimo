@@ -16,6 +16,7 @@ public class ItemPickup : MonoBehaviour
         {
             pickedUp = true;
             itemSystem.AnimatePickup(gameObject, itemType, itemVisualPrefab);
+            other.GetComponent<PlayerController>()?.PlaySound(other.GetComponent<PlayerController>() ?.grabSound);
         }
     }
 

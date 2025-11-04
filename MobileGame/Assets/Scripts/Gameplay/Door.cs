@@ -17,6 +17,7 @@ public class Door : MonoBehaviour
             playerController.BlockMovement(true);
 
         LeanTween.scale(gameObject, Vector3.zero, 0.5f).setEase(LeanTweenType.easeInBack);
+        playerController.PlaySound(playerController.unlockSound);
 
         LeanTween.delayedCall(0.55f, () =>
         {

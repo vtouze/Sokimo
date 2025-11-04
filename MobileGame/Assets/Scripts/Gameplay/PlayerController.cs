@@ -28,14 +28,30 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private FadeManager fadeManager;
 
-    //[SerializeField] private AdsInterstitial adsInterstitial;
+    [SerializeField] private AdsInterstitial adsInterstitial;
 
     [HideInInspector] public bool isBlocked = false;
+
+    [Header("Sound Effects")]
+    [SerializeField] private AudioClip moveSound;
+    [SerializeField] private AudioClip killSound;
+    public AudioClip grabSound;
+    public AudioClip unlockSound;
+    [SerializeField] private AudioClip coinSound;
+    [SerializeField] private AudioClip deathSound;
+    [SerializeField] private AudioClip winSound;
+    [SerializeField] private AudioClip teleportSound;
+    public AudioSource audioSource;
 
     void Start()
     {
         currentGridPos = groundTilemap.WorldToCell(transform.position);
         transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     void Update()
@@ -144,7 +160,7 @@ public class PlayerController : MonoBehaviour
             currentGridPos = targetPos;
             transform.position = targetWorldPos;
             lastMoveTime = Time.time;
-
+            PlaySound(moveSound);
             if (EnemyOnSameTile(currentGridPos))
             {
                 if (itemSystem != null && itemSystem.HasSword)
@@ -155,6 +171,7 @@ public class PlayerController : MonoBehaviour
                 else
                 {
                     CoinManager.Instance?.ClearSessionCoins();
+                    PlaySound(deathSound);
                     StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
                 }
             }
@@ -164,6 +181,7 @@ public class PlayerController : MonoBehaviour
         {
             if (col.CompareTag("RedFlag"))
             {
+                PlaySound(winSound);
                 CoinManager.Instance?.CommitSessionCoins();
                 StartCoroutine(EndingSequence("MainMenu"));
                 return;
@@ -191,6 +209,7 @@ public class PlayerController : MonoBehaviour
             if (enemyGridPos == pos)
             {
                 enemy.AnimateEnemyDeath(enemy.gameObject);
+                PlaySound(killSound);
             }
         }
     }
@@ -207,6 +226,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.TryGetComponent(out Coin coin))
         {
+            PlaySound(coinSound);
             coin.Collect();
         }
     }
@@ -238,13 +258,13 @@ public class PlayerController : MonoBehaviour
         fadeManager.PlayRawFadeOut();
         yield return new WaitForSeconds(fadeManager.fadeDuration);
 
-        /*if (adsInterstitial != null)
+        if (adsInterstitial != null)
         {
             bool adFinished = false;
             adsInterstitial.ShowAdWithCallback(() => adFinished = true);
             while (!adFinished)
                 yield return null;
-        }*/
+        }
 
         SceneManager.LoadScene(sceneName);
     }
@@ -285,6 +305,7 @@ public class PlayerController : MonoBehaviour
         Vector3 originalScale = transform.localScale;
         Quaternion originalRotation = transform.rotation;
 
+        PlaySound(teleportSound);
         LeanTween.scale(gameObject, originalScale * 0.5f, duration).setEaseInOutSine();
         LeanTween.rotateZ(gameObject, transform.eulerAngles.z + 180f, duration).setEaseInOutSine().setOnComplete(() =>
         {
@@ -315,10 +336,19 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            PlaySound(deathSound);
             CoinManager.Instance?.ClearSessionCoins();
             StartCoroutine(EndingSequence(
                 UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
             ));
+        }
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }
