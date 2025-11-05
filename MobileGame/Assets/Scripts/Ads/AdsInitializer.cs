@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Advertisements;
+using UnityEngine.Audio;
 
 public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
 {
@@ -9,10 +10,8 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     [SerializeField] private AdsRewarded adsRewarded;
     [SerializeField] private AdsInterstitial adsInterstitial;
 
-
     private string _gameId;
 
-    // Public static flag to indicate initialization status
     public static bool adsInitialized = false;
 
     void Awake()
@@ -63,6 +62,6 @@ public class AdsInitializer : MonoBehaviour, IUnityAdsInitializationListener
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {
         Debug.Log($"Unity Ads Initialization Failed: {error.ToString()} - {message}");
-        adsInitialized = false; // Set flag false on failure
+        adsInitialized = false;
     }
 }

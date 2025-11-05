@@ -5,16 +5,21 @@ using System;
 
 public class DailyRewardButton : MonoBehaviour
 {
-    public Button rewardButton;
-    public Image buttonImage;
-    public Sprite spriteAvailable;
-    public Sprite spriteCooldown;
-    public TMP_Text timerText;
+    [SerializeField] private Button rewardButton;
+    [SerializeField] private Image buttonImage;
+    [SerializeField] private Sprite spriteAvailable;
+    [SerializeField] private Sprite spriteCooldown;
+    [SerializeField] private TMP_Text timerText;
 
-    public int cooldownDuration = 10; // e.g., 86400 for 24h
+    [SerializeField] private int cooldownDuration = 10; // e.g., 86400 for 24h
 
     private DateTime nextRewardTime;
     private bool isReady;
+
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
 
     void Start()
     {
@@ -45,6 +50,7 @@ public class DailyRewardButton : MonoBehaviour
     {
         if (!isReady) return;
 
+        PlaySound(buttonClickSound);
         CoinManager.Instance?.AddCoin();
         PurchaseCompleteAnimations.Instance?.PlayDailyRewardAnimation();
 
@@ -83,5 +89,12 @@ public class DailyRewardButton : MonoBehaviour
     {
         PlayerPrefs.SetString("NextRewardTime", nextRewardTime.ToBinary().ToString());
         PlayerPrefs.Save();
+    }
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 }

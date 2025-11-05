@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Advertisements;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 
 
 public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowListener
@@ -21,6 +22,11 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     [SerializeField] private Image buttonImage;
     [SerializeField] private Sprite activeSprite;
     [SerializeField] private Sprite inactiveSprite;
+
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
 
 
     private bool IsAdRewardAvailable => DateTime.UtcNow >= nextAdRewardTime;
@@ -98,6 +104,7 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
     public void OnClickShowAd()
     {
+        PlaySound(buttonClickSound);
         if (!IsAdRewardAvailable)
         {
             Debug.Log("Ad reward is on cooldown. Try again later.");
@@ -156,5 +163,13 @@ public class AdsRewarded : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         }
 
         LoadAd();
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 }

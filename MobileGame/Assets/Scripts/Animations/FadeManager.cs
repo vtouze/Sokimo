@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.Audio;
 
 public class FadeManager : MonoBehaviour
 {
@@ -9,6 +10,10 @@ public class FadeManager : MonoBehaviour
     [SerializeField] private string fadeOutTrigger = "FadeOut";
     [SerializeField] private string fadeInTrigger = "FadeIn";
     public float fadeDuration = 1f;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
 
     private void Start()
     {
@@ -38,6 +43,7 @@ public class FadeManager : MonoBehaviour
 
     private IEnumerator FadeOutAndLoad(string sceneName)
     {
+        PlaySound(buttonClickSound);
         fadeObject.SetActive(true);
         fadeAnimator.ResetTrigger(fadeOutTrigger);
         fadeAnimator.SetTrigger(fadeInTrigger);
@@ -76,5 +82,11 @@ public class FadeManager : MonoBehaviour
             fadeAnimator.SetTrigger(fadeInTrigger);
         }
     }
-
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
 }

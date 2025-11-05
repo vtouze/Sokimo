@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -12,6 +13,10 @@ public class MenuManager : MonoBehaviour
     [Header("Background Video")]
     [SerializeField] private VideoPlayer backgroundVideo;
     private RectTransform currentMenu;
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
 
     private void Start()
     {
@@ -35,21 +40,25 @@ public class MenuManager : MonoBehaviour
 
     public void ShowShopMenu()
     {
+        PlaySound(buttonClickSound);
         ShowMenuFromDirection(shopMenu, Vector2.left);
     }
 
     public void ShowSettingsMenu()
     {
+        PlaySound(buttonClickSound);
         ShowMenuFromDirection(settingsMenu, Vector2.right);
     }
 
     public void ShowLevelSelectionMenu()
     {
+        PlaySound(buttonClickSound);
         ShowMenuFromDirection(levelSelectionMenu, Vector2.down);
     }
 
     public void BackToMainMenu()
     {
+        PlaySound(buttonClickSound);
         Vector2 exitDir = Vector2.zero;
         if (currentMenu == shopMenu) exitDir = Vector2.left;
         else if (currentMenu == settingsMenu) exitDir = Vector2.right;
@@ -145,5 +154,13 @@ public class MenuManager : MonoBehaviour
             .setOnComplete(() =>
             {
             });
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
+        }
     }
 }

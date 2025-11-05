@@ -3,8 +3,13 @@ using UnityEngine.Purchasing;
 
 public class IAP_Sokimo : MonoBehaviour
 {
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
+
     public void Purchase(Product product)
     {
+        PlaySound(buttonClickSound);
         string id = product.definition.id;
 
         if (id.Equals("coin20"))
@@ -24,8 +29,16 @@ public class IAP_Sokimo : MonoBehaviour
         }
         else if (id.Equals("noAds"))
         {
-            //AdsManager.Instance.OnNoAdsPurchased();
+            AdsManager.Instance.OnNoAdsPurchased();
             PurchaseCompleteAnimations.Instance?.PlayNoAdsAnimation();
+        }
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        if (clip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }

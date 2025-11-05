@@ -1,100 +1,159 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 
 public class SettingsMenu : MonoBehaviour
 {
     [Header("UI Elements")]
     [SerializeField] private Button sfxToggleButton;
     [SerializeField] private Button musicToggleButton;
+    [SerializeField] private Button masterToggleButton;
     [SerializeField] private Sprite spriteOn;
     [SerializeField] private Sprite spriteOff;
+    [SerializeField] private Sprite masterMuteOnSprite;
+    [SerializeField] private Sprite masterMuteOffSprite;
 
-    [Header("Audio Mixers")]
+    [Header("Audio")]
     public AudioMixer audioMixer;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip buttonClickSound;
 
     private const string SFX_VOLUME_PARAM = "SFX";
     private const string MUSIC_VOLUME_PARAM = "Music";
+    private const string MASTER_VOLUME_PARAM = "Master";
 
     private bool sfxEnabled = true;
     private bool musicEnabled = true;
+    private bool masterMuted = false;
 
     void Start()
     {
         LoadSettings();
         UpdateVisuals();
+        UpdateMasterMuteIndicator();
 
         if (sfxToggleButton != null)
             sfxToggleButton.onClick.AddListener(ToggleSFX);
         if (musicToggleButton != null)
             musicToggleButton.onClick.AddListener(ToggleMusic);
+        if (masterToggleButton != null)
+            masterToggleButton.onClick.AddListener(ToggleMasterVolume);
     }
 
     private void LoadSettings()
     {
         sfxEnabled = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
         musicEnabled = PlayerPrefs.GetInt("MusicEnabled", 1) == 1;
+        masterMuted = PlayerPrefs.GetInt("MasterMuted", 0) == 1;
 
-        Debug.Log($"Loading settings: SFX={sfxEnabled}, Music={musicEnabled}");
-
-        SetSFXVolume(sfxEnabled ? 0f : -80f);
-        SetMusicVolume(musicEnabled ? 0f : -80f);
+        SetVolume(SFX_VOLUME_PARAM, sfxEnabled ? 0f : -80f);
+        SetVolume(MUSIC_VOLUME_PARAM, musicEnabled ? 0f : -80f);
+        SetVolume(MASTER_VOLUME_PARAM, masterMuted ? -80f : 0f);
     }
 
     private void UpdateVisuals()
     {
         if (sfxToggleButton != null && sfxToggleButton.image != null)
-            sfxToggleButton.image.sprite = sfxEnabled ? spriteOn : spriteOff;
+            sfxToggleButton.image.sprite = (sfxEnabled && !masterMuted) ? spriteOn : spriteOff;
         if (musicToggleButton != null && musicToggleButton.image != null)
-            musicToggleButton.image.sprite = musicEnabled ? spriteOn : spriteOff;
+            musicToggleButton.image.sprite = (musicEnabled && !masterMuted) ? spriteOn : spriteOff;
+        if (masterToggleButton != null && masterToggleButton.image != null)
+            masterToggleButton.image.sprite = masterMuted ? masterMuteOnSprite : masterMuteOffSprite;
+    }
+
+    private void UpdateMasterMuteIndicator()
+    {
+        if (masterToggleButton != null)
+        {
+            masterToggleButton.image.sprite = masterMuted ? masterMuteOnSprite : masterMuteOffSprite;
+        }
     }
 
     public void ToggleSFX()
     {
         sfxEnabled = !sfxEnabled;
-        Debug.Log($"Toggling SFX: {sfxEnabled}");
-        SetSFXVolume(sfxEnabled ? 0f : -80f);
+        SetVolume(SFX_VOLUME_PARAM, sfxEnabled ? 0f : -80f);
         PlayerPrefs.SetInt("SFXEnabled", sfxEnabled ? 1 : 0);
         PlayerPrefs.Save();
+        CheckAndUpdateMasterVolume();
         UpdateVisuals();
+        PlaySound(buttonClickSound);
     }
 
     public void ToggleMusic()
     {
         musicEnabled = !musicEnabled;
-        Debug.Log($"Toggling Music: {musicEnabled}");
-        SetMusicVolume(musicEnabled ? 0f : -80f);
+        SetVolume(MUSIC_VOLUME_PARAM, musicEnabled ? 0f : -80f);
         PlayerPrefs.SetInt("MusicEnabled", musicEnabled ? 1 : 0);
         PlayerPrefs.Save();
+        CheckAndUpdateMasterVolume();
         UpdateVisuals();
+        PlaySound(buttonClickSound);
     }
 
-    private void SetSFXVolume(float volume)
+    public void ToggleMasterVolume()
+    {
+        masterMuted = !masterMuted;
+        SetVolume(MASTER_VOLUME_PARAM, masterMuted ? -80f : 0f);
+        PlayerPrefs.SetInt("MasterMuted", masterMuted ? 1 : 0);
+
+        if (!masterMuted)
+        {
+            sfxEnabled = true;
+            musicEnabled = true;
+            SetVolume(SFX_VOLUME_PARAM, 0f);
+            SetVolume(MUSIC_VOLUME_PARAM, 0f);
+            PlayerPrefs.SetInt("SFXEnabled", 1);
+            PlayerPrefs.SetInt("MusicEnabled", 1);
+        }
+        else
+        {
+            sfxEnabled = false;
+            musicEnabled = false;
+            SetVolume(SFX_VOLUME_PARAM, -80f);
+            SetVolume(MUSIC_VOLUME_PARAM, -80f);
+            PlayerPrefs.SetInt("SFXEnabled", 0);
+            PlayerPrefs.SetInt("MusicEnabled", 0);
+        }
+
+        PlayerPrefs.Save();
+        UpdateVisuals();
+        UpdateMasterMuteIndicator();
+        PlaySound(buttonClickSound);
+    }
+
+    private void CheckAndUpdateMasterVolume()
+    {
+        if (!sfxEnabled && !musicEnabled)
+        {
+            masterMuted = true;
+            SetVolume(MASTER_VOLUME_PARAM, -80f);
+            PlayerPrefs.SetInt("MasterMuted", 1);
+        }
+        else if (masterMuted && (sfxEnabled || musicEnabled))
+        {
+            masterMuted = false;
+            SetVolume(MASTER_VOLUME_PARAM, 0f);
+            PlayerPrefs.SetInt("MasterMuted", 0);
+        }
+        PlayerPrefs.Save();
+        UpdateVisuals();
+        UpdateMasterMuteIndicator();
+    }
+
+    private void SetVolume(string param, float volume)
     {
         if (audioMixer != null)
         {
-            bool success = audioMixer.SetFloat(SFX_VOLUME_PARAM, volume);
-            if (!success)
-                Debug.LogError($"Failed to set SFX volume. Parameter '{SFX_VOLUME_PARAM}' not found in AudioMixer.");
-            else
-                Debug.Log($"SFX volume set to: {volume}");
+            bool success = audioMixer.SetFloat(param, volume);
         }
-        else
-            Debug.LogError("AudioMixer is not assigned.");
     }
 
-    private void SetMusicVolume(float volume)
+    public void PlaySound(AudioClip clip)
     {
-        if (audioMixer != null)
+        if (clip != null && audioSource != null)
         {
-            bool success = audioMixer.SetFloat(MUSIC_VOLUME_PARAM, volume);
-            if (!success)
-                Debug.LogError($"Failed to set Music volume. Parameter '{MUSIC_VOLUME_PARAM}' not found in AudioMixer.");
-            else
-                Debug.Log($"Music volume set to: {volume}");
+            audioSource.PlayOneShot(clip);
         }
-        else
-            Debug.LogError("AudioMixer is not assigned.");
     }
 }
