@@ -346,7 +346,10 @@ public class PlayerController : MonoBehaviour
 
     public void PlaySound(AudioClip clip)
     {
-        if (clip != null && audioSource != null)
+        bool masterMuted = PlayerPrefs.GetInt("MasterMuted", 0) == 1;
+        bool sfxEnabled = PlayerPrefs.GetInt("SFXEnabled", 1) == 1;
+
+        if (clip != null && audioSource != null && sfxEnabled && !masterMuted)
         {
             audioSource.PlayOneShot(clip);
         }
