@@ -27,10 +27,15 @@ public class IAP_Sokimo : MonoBehaviour
             CoinManager.Instance.AddCoin(100);
             PurchaseCompleteAnimations.Instance?.PlayCoinAnimation("coin100");
         }
-        else if (id.Equals("noAds"))
+        else if (id.Equals("coin150"))
         {
-            AdsManager.Instance.OnNoAdsPurchased();
-            PurchaseCompleteAnimations.Instance?.PlayNoAdsAnimation();
+            CoinManager.Instance.AddCoin(150);
+            PurchaseCompleteAnimations.Instance?.PlayCoinAnimation("coin150");
+        }
+        else if (id.Equals("coin200"))
+        {
+            CoinManager.Instance.AddCoin(200);
+            PurchaseCompleteAnimations.Instance?.PlayCoinAnimation("coin200");
         }
     }
 

@@ -8,9 +8,9 @@ public class PurchaseCompleteAnimations : MonoBehaviour
     [SerializeField] private RectTransform coin20Icon;
     [SerializeField] private RectTransform coin50Icon;
     [SerializeField] private RectTransform coin100Icon;
+    [SerializeField] private RectTransform coin150Icon;
+    [SerializeField] private RectTransform coin200Icon;
     [SerializeField] private RectTransform dailyRewardIcon;
-    [SerializeField] private RectTransform adRewardIcon;
-    [SerializeField] private Button noAdsButton;
 
     [Header("Settings")]
     [SerializeField] private float coinMoveDuration = 0.8f;
@@ -27,10 +27,6 @@ public class PurchaseCompleteAnimations : MonoBehaviour
     {
         Instance = this;
     }
-
-    // --------------------------
-    // GENERIC COIN ANIMATION
-    // --------------------------
     public void PlayCoinAnimation(string coinType)
     {
         RectTransform sourceIcon = null;
@@ -40,6 +36,8 @@ public class PurchaseCompleteAnimations : MonoBehaviour
             case "coin20": sourceIcon = coin20Icon; break;
             case "coin50": sourceIcon = coin50Icon; break;
             case "coin100": sourceIcon = coin100Icon; break;
+            case "coin150": sourceIcon = coin150Icon; break;
+            case "coin200": sourceIcon = coin200Icon; break;
         }
 
         if (sourceIcon == null)
@@ -51,7 +49,6 @@ public class PurchaseCompleteAnimations : MonoBehaviour
         PlayCoinAnimationFrom(sourceIcon);
     }
 
-    // 🟢 Reusable function — works for daily reward & ad rewarded
     public void PlayCoinAnimationFrom(RectTransform sourceIcon)
     {
         if (coinBalanceIcon == null || sourceIcon == null)
@@ -69,7 +66,6 @@ public class PurchaseCompleteAnimations : MonoBehaviour
         tempIcon.position = startPos;
         tempIcon.localScale = sourceIcon.localScale;
 
-        // Move animation (unchanged)
         LeanTween.move(tempIcon.gameObject, targetPos, coinMoveDuration)
             .setEase(LeanTweenType.easeInOutQuad)
             .setOnComplete(() =>
@@ -79,52 +75,14 @@ public class PurchaseCompleteAnimations : MonoBehaviour
                 Vector3 originalScale = coinBalanceIcon.localScale;
                 Vector3 targetScale = originalScale * coinBounceScale;
 
-                // 🌀 Floaty bounce: slower ease in/out, like air resistance
                 LeanTween.scale(coinBalanceIcon, targetScale, coinBounceDuration / 1.2f)
                     .setEase(LeanTweenType.easeOutQuad)
                     .setOnComplete(() =>
                     {
                         LeanTween.scale(coinBalanceIcon, originalScale, coinBounceDuration / 1.5f)
-                            .setEase(LeanTweenType.easeOutElastic); // softer landing curve
+                            .setEase(LeanTweenType.easeOutElastic);
                     });
             });
     }
-
-    // --------------------------
-    // NO ADS ANIMATION
-    // --------------------------
-    public void PlayNoAdsAnimation()
-    {
-        if (noAdsButton == null)
-        {
-            Debug.LogWarning("[PurchaseAnimations] Missing No Ads button reference!");
-            return;
-        }
-
-        RectTransform btnRect = noAdsButton.GetComponent<RectTransform>();
-        Image btnImage = noAdsButton.GetComponent<Image>();
-        Vector3 originalScale = btnRect.localScale;
-        Vector3 targetScale = originalScale * noAdsScaleUp;
-
-        LeanTween.scale(btnRect, targetScale, noAdsScaleDuration)
-            .setEase(LeanTweenType.easeOutBack)
-            .setOnComplete(() =>
-            {
-                LeanTween.scale(btnRect, originalScale, noAdsScaleDuration)
-                    .setEase(LeanTweenType.easeInOutBack)
-                    .setOnComplete(() =>
-                    {
-                        if (btnImage != null)
-                            btnImage.color = noAdsLockedColor;
-
-                        noAdsButton.interactable = false;
-                    });
-            });
-    }
-
-    // --------------------------
-    // CONVENIENCE HELPERS
-    // --------------------------
     public void PlayDailyRewardAnimation() => PlayCoinAnimationFrom(dailyRewardIcon);
-    public void PlayAdRewardAnimation() => PlayCoinAnimationFrom(adRewardIcon);
 }
