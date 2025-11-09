@@ -1,24 +1,18 @@
 ﻿using UnityEngine;
 using Unity.Notifications.Android;
-using Unity.Notifications;
 using System;
 using System.Collections;
 using UnityEngine.Audio;
 using UnityEngine.UI;
-
-#if UNITY_IOS && !UNITY_EDITOR
-using UnityEngine.iOS;
-#endif
+using Unity.Notifications;
 
 public class NotificationManager : MonoBehaviour
 {
     public static NotificationManager Instance;
-
     [Header("UI Elements")]
     [SerializeField] private Button notificationToggleButton;
     [SerializeField] private Sprite notificationSpriteOn;
     [SerializeField] private Sprite notificationSpriteOff;
-
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip buttonClickSound;
@@ -49,8 +43,6 @@ public class NotificationManager : MonoBehaviour
 
 #if UNITY_ANDROID && !UNITY_EDITOR
             StartCoroutine(RequestNotificationPermission());
-#elif UNITY_IOS && !UNITY_EDITOR
-            StartCoroutine(RequestiOSNotificationPermission());
 #endif
         }
         else
@@ -70,26 +62,29 @@ public class NotificationManager : MonoBehaviour
 
     IEnumerator RequestNotificationPermission()
     {
-        var request = NotificationCenter.RequestPermission();
-        if (request.Status == NotificationsPermissionStatus.RequestPending)
-            yield return request;
-
-        Debug.Log("Permission result: " + request.Status);
-
-        if (request.Status == NotificationsPermissionStatus.Denied)
+#if UNITY_ANDROID
+        try
         {
-            Debug.Log("Notification permission denied. Opening app notification settings...");
-            OpenAppNotificationSettings();
+            // Reflection-based call for newer versions
+            var method = typeof(AndroidNotificationCenter).GetMethod("RequestPermission");
+            if (method != null)
+            {
+                var request = method.Invoke(null, null);
+                Debug.Log("RequestPermission() called via reflection.");
+            }
+            else
+            {
+                Debug.Log("RequestPermission() not available (older Unity notification package).");
+            }
         }
+        catch (Exception e)
+        {
+            Debug.LogWarning("Notification permission request not supported: " + e.Message);
+        }
+#endif
+        yield break;
     }
 
-#if UNITY_IOS && !UNITY_EDITOR
-    IEnumerator RequestiOSNotificationPermission()
-    {
-        NotificationServices.RequestAuthorization(AuthorizationOption.Alert | AuthorizationOption.Badge | AuthorizationOption.Sound, true);
-        yield return new WaitForEndOfFrame();
-    }
-#endif
 
     void InitializeNotificationChannel()
     {
@@ -106,10 +101,26 @@ public class NotificationManager : MonoBehaviour
     public bool AreNotificationsEnabled()
     {
 #if UNITY_ANDROID && !UNITY_EDITOR
-        var status = NotificationCenter.CheckPermission();
-        return status == NotificationsPermissionStatus.Granted;
-#elif UNITY_IOS && !UNITY_EDITOR
-        return NotificationServices.authorizationStatus == AuthorizationStatus.Authorized;
+    try
+    {
+        // Check if method exists in current Unity.Notifications version
+        var method = typeof(AndroidNotificationCenter).GetMethod("CheckPermission", System.Type.EmptyTypes);
+        if (method != null)
+        {
+            var status = method.Invoke(null, null);
+            return status != null && status.ToString().Equals("Allowed");
+        }
+        else
+        {
+            Debug.Log("CheckPermission() not available — assuming allowed.");
+            return true; // Fallback for older packages
+        }
+    }
+    catch (Exception e)
+    {
+        Debug.LogWarning("Permission check failed: " + e.Message);
+        return true; // Fallback to safe default
+    }
 #else
         return true;
 #endif
@@ -119,7 +130,6 @@ public class NotificationManager : MonoBehaviour
     {
         PlaySound(buttonClickSound);
         NotificationsEnabled = !NotificationsEnabled;
-        UpdateNotificationVisuals();
     }
 
     private void UpdateNotificationVisuals()
@@ -137,7 +147,6 @@ public class NotificationManager : MonoBehaviour
             Debug.Log("Notification not scheduled: disabled by user or no permission.");
             return;
         }
-
         AndroidNotificationCenter.CancelAllScheduledNotifications();
         var notification = new AndroidNotification()
         {
@@ -155,7 +164,6 @@ public class NotificationManager : MonoBehaviour
             Debug.Log("Ad Reward notification not scheduled: disabled by user or no permission.");
             return;
         }
-
         var notification = new AndroidNotification()
         {
             Title = "💰 Watch an Ad, Get a Coin!",
