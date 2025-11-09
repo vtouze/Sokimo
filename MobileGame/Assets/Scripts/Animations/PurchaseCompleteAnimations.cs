@@ -17,10 +17,6 @@ public class PurchaseCompleteAnimations : MonoBehaviour
     [SerializeField] private float coinBounceScale = 1.3f;
     [SerializeField] private float coinBounceDuration = 0.25f;
 
-    [SerializeField] private float noAdsScaleUp = 1.15f;
-    [SerializeField] private float noAdsScaleDuration = 0.3f;
-    [SerializeField] private Color noAdsLockedColor = Color.gray;
-
     public static PurchaseCompleteAnimations Instance;
 
     void Awake()

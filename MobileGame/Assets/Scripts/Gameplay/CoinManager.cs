@@ -132,5 +132,26 @@ public class CoinManager : MonoBehaviour
         Debug.Log("All CoinCollected keys from this scene have been reset.");
     }
 
+    [ContextMenu("Reset Current Coins")]
+    public void ResetCurrentCoins()
+    {
+        currentCoins = 0;
+        SaveCoins();
+        UpdateCoinText();
+    }
 
+    [ContextMenu("Set Current Coins")]
+    public void SetCurrentCoins()
+    {
+        currentCoins = 100;
+        SaveCoins();
+        UpdateCoinText();
+    }
+
+    public void SetCurrentCoins(int amount)
+    {
+        currentCoins = amount;
+        SaveCoins();
+        UpdateCoinText();
+    }
 }
