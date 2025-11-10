@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9ec598cdbe81f3a4d9cf9c267110e77c
+guid: 6ea7f982fc9825043a83418e85e30209
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7757398296414164938
-    second: grinning-face-with-big-eyes_1f603_0
+      213: 6424517657538943787
+    second: musical-note_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: grinning-face-with-big-eyes_1f603_0
+      name: musical-note_0
       rect:
         serializedVersion: 2
-        x: 19
-        y: 19
-        width: 474
-        height: 474
+        x: 23
+        y: 12
+        width: 183
+        height: 216
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ac79cfe66a0d7ab60800000000000000
-      internalID: 7757398296414164938
+      spriteID: b2b55de55c8782950800000000000000
+      internalID: 6424517657538943787
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      grinning-face-with-big-eyes_1f603_0: 7757398296414164938
+      musical-note_0: 6424517657538943787
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
