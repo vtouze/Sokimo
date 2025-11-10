@@ -12,7 +12,7 @@ public class Door : MonoBehaviour
         Collider2D col = GetComponent<Collider2D>();
         if (col != null) col.enabled = false;
 
-        PlayerController playerController = FindObjectOfType<PlayerController>();
+        PlayerController playerController = FindAnyObjectByType<PlayerController>();
         if (playerController != null)
             playerController.BlockMovement(true);
 

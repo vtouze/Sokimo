@@ -70,7 +70,7 @@ public class CoinManager : MonoBehaviour
     {
         PlayerPrefs.DeleteKey("Coins");
 
-        foreach (Coin coin in FindObjectsOfType<Coin>())
+        foreach (Coin coin in Object.FindObjectsByType<Coin>(FindObjectsSortMode.None))
         {
             if (!string.IsNullOrEmpty(coin.CoinID))
                 PlayerPrefs.DeleteKey("CoinCollected_" + coin.CoinID);
@@ -119,7 +119,7 @@ public class CoinManager : MonoBehaviour
 
     public void ResetCoinPrefsFromScene()
     {
-        foreach (Coin coin in FindObjectsOfType<Coin>())
+        foreach (Coin coin in Object.FindObjectsByType<Coin>(FindObjectsSortMode.None))
         {
             if (!string.IsNullOrEmpty(coin.CoinID))
             {

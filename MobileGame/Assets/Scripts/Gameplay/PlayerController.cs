@@ -186,7 +186,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        EnemyAI[] enemies = Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
         {
             Vector3Int playerPos = currentGridPos;
@@ -200,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
     private void KillEnemiesOnSameTile(Vector3Int pos)
     {
-        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        EnemyAI[] enemies = Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
         {
             Vector3Int enemyGridPos = groundTilemap.WorldToCell(enemy.transform.position);
@@ -231,7 +231,7 @@ public class PlayerController : MonoBehaviour
 
     private bool EnemyOnSameTile(Vector3Int pos)
     {
-        EnemyAI[] enemies = FindObjectsOfType<EnemyAI>();
+        EnemyAI[] enemies = Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
         foreach (var enemy in enemies)
         {
             Vector3Int enemyGridPos = groundTilemap.WorldToCell(enemy.transform.position);

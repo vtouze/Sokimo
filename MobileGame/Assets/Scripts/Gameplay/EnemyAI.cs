@@ -132,7 +132,7 @@ public class EnemyAI : MonoBehaviour
         if (col != null)
             col.enabled = false;
 
-        PlayerController playerController = FindObjectOfType<PlayerController>();
+        PlayerController playerController = FindAnyObjectByType<PlayerController>();
         if (playerController != null)
             playerController.BlockMovement(true);
 

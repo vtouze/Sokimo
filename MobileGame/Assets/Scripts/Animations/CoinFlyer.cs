@@ -18,7 +18,7 @@ public class CoinFlyer : MonoBehaviour
     void Awake()
     {
         flyerRect = GetComponent<RectTransform>();
-        canvas = FindObjectOfType<Canvas>();
+        canvas = FindAnyObjectByType<Canvas>();
 
         GameObject iconGO = GameObject.Find(coinIconName);
         if (iconGO != null)
