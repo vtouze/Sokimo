@@ -2,8 +2,7 @@
 using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEngine.Advertisements;
-
+using CandyCoded.HapticFeedback;
 public class PlayerController : MonoBehaviour
 {
     public Tilemap groundTilemap;
@@ -179,6 +178,7 @@ public class PlayerController : MonoBehaviour
         {
             if (col.CompareTag("RedFlag"))
             {
+                HapticFeedback.HeavyFeedback();
                 PlaySound(winSound);
                 CoinManager.Instance?.CommitSessionCoins();
                 StartCoroutine(EndingSequence("MainMenu"));
@@ -208,6 +208,7 @@ public class PlayerController : MonoBehaviour
             {
                 enemy.AnimateEnemyDeath(enemy.gameObject);
                 PlaySound(killSound);
+                HapticFeedback.HeavyFeedback();
             }
         }
     }
@@ -326,6 +327,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            HapticFeedback.HeavyFeedback();
             PlaySound(deathSound);
             CoinManager.Instance?.ClearSessionCoins();
             StartCoroutine(EndingSequence(

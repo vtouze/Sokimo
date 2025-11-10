@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
+using CandyCoded.HapticFeedback;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class SettingsMenu : MonoBehaviour
     private bool sfxEnabled = true;
     private bool musicEnabled = true;
     private bool masterMuted = false;
+
 
     void Start()
     {

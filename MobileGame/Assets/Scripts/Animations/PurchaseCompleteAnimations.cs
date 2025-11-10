@@ -36,23 +36,11 @@ public class PurchaseCompleteAnimations : MonoBehaviour
             case "coin200": sourceIcon = coin200Icon; break;
         }
 
-        if (sourceIcon == null)
-        {
-            Debug.LogWarning($"[PurchaseAnimations] Unknown or unassigned coin icon for '{coinType}'");
-            return;
-        }
-
         PlayCoinAnimationFrom(sourceIcon);
     }
 
     public void PlayCoinAnimationFrom(RectTransform sourceIcon)
     {
-        if (coinBalanceIcon == null || sourceIcon == null)
-        {
-            Debug.LogWarning("[PurchaseAnimations] Missing coin references for coin animation!");
-            return;
-        }
-
         RectTransform tempIcon = Instantiate(sourceIcon, sourceIcon.parent);
         tempIcon.SetAsLastSibling();
 

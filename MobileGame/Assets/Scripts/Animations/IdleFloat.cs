@@ -92,7 +92,6 @@ public class IdleFloat : MonoBehaviour
         AnimateXRotation();
     }
 
-    // Animation Helpers (unchanged)
     private void AnimateFloat()
     {
         LeanTween.moveLocalY(gameObject, startLocalPos.y + amplitude, duration)
