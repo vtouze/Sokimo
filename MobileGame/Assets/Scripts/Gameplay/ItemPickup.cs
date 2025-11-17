@@ -24,5 +24,4 @@ public class ItemPickup : MonoBehaviour
     {
         pickedUp = false;
     }
-
 }

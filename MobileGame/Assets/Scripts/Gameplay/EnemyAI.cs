@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections;
 
 public class EnemyAI : MonoBehaviour
 {
     [SerializeField] private Tilemap groundTilemap;
     [SerializeField] private Tilemap topTilemap;
     [SerializeField] private Transform playerTransform;
-
-    [SerializeField] private float moveCooldown = 0.2f;
+    [SerializeField] private float moveCooldown = 0.5f;
 
     [Header("Sprites")]
     [SerializeField] private Sprite idleSprite;
@@ -17,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     private Vector3Int currentGridPos;
     private bool isChasing = false;
     private float lastMoveTime = 0f;
+    private Coroutine patrolRoutine;
 
     private readonly Vector3Int[] directions = new Vector3Int[]
     {
@@ -27,7 +28,7 @@ public class EnemyAI : MonoBehaviour
     };
 
     public enum EnemyType { Sleeper, Patroller, Sentinel }
-    [SerializeField] private EnemyType enemyType;
+    public EnemyType enemyType;
 
     [Header("Patrol Settings")]
     [SerializeField] private Transform[] patrolPoints;
@@ -45,33 +46,80 @@ public class EnemyAI : MonoBehaviour
             else if (enemyType == EnemyType.Sleeper && idleSprite != null)
                 spriteRenderer.sprite = idleSprite;
         }
+
+        // Start patrol routine for Patrollers
+        if (enemyType == EnemyType.Patroller && patrolPoints.Length > 0)
+        {
+            patrolRoutine = StartCoroutine(PatrolRoutine());
+        }
     }
 
-    void Update()
+    void OnDestroy()
     {
-        Vector3Int playerPos = groundTilemap.WorldToCell(playerTransform.position);
+        if (patrolRoutine != null)
+        {
+            StopCoroutine(patrolRoutine);
+        }
+    }
 
+    // This method is called from PlayerController after the player moves
+    public void HandleEnemyLogic(Vector3Int playerPos)
+    {
         if (enemyType == EnemyType.Sleeper)
         {
             int dist = ManhattanDistance(currentGridPos, playerPos);
             TryChasePlayer(playerPos, dist);
         }
+        else if (enemyType == EnemyType.Sentinel)
+        {
+            HandleSentinelLogic(playerPos);
+        }
+        // Patrollers are handled by their own coroutine
     }
 
-    public void HandlePatrollerLogic(Vector3Int playerPos, int manhattanDist)
+    private IEnumerator PatrolRoutine()
     {
-        if (enemyType != EnemyType.Patroller) return;
-        TryChasePlayer(playerPos, manhattanDist);
-
-        if (!isChasing && patrolPoints.Length > 0)
+        while (true)
         {
-            currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
-            Vector3Int nextPos = groundTilemap.WorldToCell(patrolPoints[currentPatrolIndex].position);
+            yield return new WaitForSeconds(moveCooldown);
 
-            if (IsWalkable(nextPos))
+            // Check if player is on the same grid
+            Vector3Int playerPos = groundTilemap.WorldToCell(playerTransform.position);
+            if (currentGridPos == playerPos)
             {
-                currentGridPos = nextPos;
-                transform.position = groundTilemap.GetCellCenterWorld(currentGridPos);
+                PlayerController player = playerTransform.GetComponent<PlayerController>();
+                if (player != null)
+                {
+                    player.EnemyCollided(this);
+                    yield break; // Stop patrolling if player is killed
+                }
+            }
+
+            // Move to next patrol point
+            if (patrolPoints.Length > 0)
+            {
+                currentPatrolIndex = (currentPatrolIndex + 1) % patrolPoints.Length;
+                Vector3Int nextPos = groundTilemap.WorldToCell(patrolPoints[currentPatrolIndex].position);
+
+                if (IsWalkable(nextPos))
+                {
+                    // Move to the next position
+                    Vector3 targetWorldPos = groundTilemap.GetCellCenterWorld(nextPos);
+                    transform.position = targetWorldPos;
+                    currentGridPos = nextPos;
+
+                    // Check again after moving in case player moved to this position
+                    playerPos = groundTilemap.WorldToCell(playerTransform.position);
+                    if (currentGridPos == playerPos)
+                    {
+                        PlayerController player = playerTransform.GetComponent<PlayerController>();
+                        if (player != null)
+                        {
+                            player.EnemyCollided(this);
+                            yield break;
+                        }
+                    }
+                }
             }
         }
     }
@@ -92,12 +140,10 @@ public class EnemyAI : MonoBehaviour
             return;
 
         Vector3Int bestMove = currentGridPos;
-
         foreach (Vector3Int dir in directions)
         {
             Vector3Int candidate = currentGridPos + dir;
             int distToPlayer = ManhattanDistance(candidate, playerGridPos);
-
             if (distToPlayer == 1 && IsWalkable(candidate))
             {
                 bestMove = candidate;
@@ -113,45 +159,6 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private int ManhattanDistance(Vector3Int a, Vector3Int b)
-    {
-        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
-    }
-
-    bool IsWalkable(Vector3Int pos)
-    {
-        bool hasGround = groundTilemap.HasTile(pos);
-        bool hasObstacle = topTilemap.HasTile(pos);
-
-        return hasGround && !hasObstacle;
-    }
-
-    public void AnimateEnemyDeath(GameObject enemy)
-    {
-        Collider2D col = enemy.GetComponent<Collider2D>();
-        if (col != null)
-            col.enabled = false;
-
-        PlayerController playerController = FindAnyObjectByType<PlayerController>();
-        if (playerController != null)
-            playerController.BlockMovement(true);
-
-        MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
-        foreach (var script in scripts)
-            script.enabled = false;
-
-        LeanTween.scale(enemy, Vector3.zero, 0.4f).setEase(LeanTweenType.easeInBack);
-        SpriteRenderer sr = enemy.GetComponent<SpriteRenderer>();
-        if (sr != null)
-        {
-            LeanTween.alpha(enemy, 0f, 0.4f).setEase(LeanTweenType.easeInQuad);
-        }
-
-        LeanTween.delayedCall(enemy, 0.45f, () => Destroy(enemy));
-            if (playerController != null)
-            playerController.BlockMovement(false);
-    }
-
     public void HandleSentinelLogic(Vector3Int playerPos)
     {
         if (enemyType != EnemyType.Sentinel) return;
@@ -164,7 +171,6 @@ public class EnemyAI : MonoBehaviour
                 spriteRenderer.sprite = chaseSprite;
 
             Vector3Int direction = Vector3Int.zero;
-
             if (playerPos.x > currentGridPos.x) direction = Vector3Int.right;
             else if (playerPos.x < currentGridPos.x) direction = Vector3Int.left;
             else if (playerPos.y > currentGridPos.y) direction = Vector3Int.up;
@@ -180,6 +186,7 @@ public class EnemyAI : MonoBehaviour
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(
                     groundTilemap.GetCellCenterWorld(currentGridPos), 0.1f
                 );
+
                 foreach (var col in colliders)
                 {
                     EnemyAI otherEnemy = col.GetComponent<EnemyAI>();
@@ -210,6 +217,43 @@ public class EnemyAI : MonoBehaviour
             if (spriteRenderer != null && idleSprite != null)
                 spriteRenderer.sprite = idleSprite;
         }
+    }
+
+    private int ManhattanDistance(Vector3Int a, Vector3Int b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y);
+    }
+
+    bool IsWalkable(Vector3Int pos)
+    {
+        bool hasGround = groundTilemap.HasTile(pos);
+        bool hasObstacle = topTilemap.HasTile(pos);
+        return hasGround && !hasObstacle;
+    }
+
+    public void AnimateEnemyDeath(GameObject enemy)
+    {
+        Collider2D col = enemy.GetComponent<Collider2D>();
+        if (col != null)
+            col.enabled = false;
+
+        PlayerController playerController = Object.FindFirstObjectByType<PlayerController>();
+        if (playerController != null)
+            playerController.BlockMovement(true);
+
+        MonoBehaviour[] scripts = enemy.GetComponents<MonoBehaviour>();
+        foreach (var script in scripts)
+            script.enabled = false;
+
+        LeanTween.scale(enemy, Vector3.zero, 0.4f).setEase(LeanTweenType.easeInBack);
+        SpriteRenderer sr = enemy.GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            LeanTween.alpha(enemy, 0f, 0.4f).setEase(LeanTweenType.easeInQuad);
+        }
+        LeanTween.delayedCall(enemy, 0.45f, () => Destroy(enemy));
+        if (playerController != null)
+            playerController.BlockMovement(false);
     }
 
     private bool IsInLineOfSight(Vector3Int playerPos)

@@ -3,6 +3,7 @@ using UnityEngine.Tilemaps;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using CandyCoded.HapticFeedback;
+using static EnemyAI;
 public class PlayerController : MonoBehaviour
 {
     public Tilemap groundTilemap;
@@ -110,15 +111,40 @@ public class PlayerController : MonoBehaviour
     private void TryMove(Vector3Int direction)
     {
         if (isBlocked) return;
-
         Vector3Int targetPos = currentGridPos + direction;
         Vector3 targetWorldPos = groundTilemap.GetCellCenterWorld(targetPos);
-
         if (!groundTilemap.HasTile(targetPos))
             return;
-
         if (topTilemap.HasTile(targetPos))
             return;
+
+        // Check for Patrollers on the target position BEFORE moving
+        EnemyAI[] enemies = Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
+        var itemSystem = GetComponent<PlayerItemSystem>();
+
+        foreach (var enemy in enemies)
+        {
+            if (enemy.enemyType == EnemyType.Patroller)
+            {
+                Vector3Int enemyPos = groundTilemap.WorldToCell(enemy.transform.position);
+                if (enemyPos == targetPos)
+                {
+                    if (itemSystem != null && itemSystem.HasSword)
+                    {
+                        KillEnemiesOnSameTile(targetPos);
+                        itemSystem.ConsumeSword();
+                    }
+                    else
+                    {
+                        HapticFeedback.HeavyFeedback();
+                        PlaySound(deathSound);
+                        CoinManager.Instance?.ClearSessionCoins();
+                        StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
+                    }
+                    return;
+                }
+            }
+        }
 
         Collider2D[] colliders = Physics2D.OverlapCircleAll(targetWorldPos, 0.1f);
         Door door = null;
@@ -129,8 +155,6 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        var itemSystem = GetComponent<PlayerItemSystem>();
-
         if (door != null)
         {
             if (door.IsLocked)
@@ -139,37 +163,41 @@ public class PlayerController : MonoBehaviour
                 {
                     door.OpenDoor();
                     itemSystem.ConsumeKey();
-
-                    currentGridPos = targetPos;
-                    transform.position = targetWorldPos;
-                    lastMoveTime = Time.time;
+                    MoveToPosition(targetPos, targetWorldPos);
                 }
             }
             else
             {
-                currentGridPos = targetPos;
-                transform.position = targetWorldPos;
-                lastMoveTime = Time.time;
+                MoveToPosition(targetPos, targetWorldPos);
             }
         }
         else
         {
-            currentGridPos = targetPos;
-            transform.position = targetWorldPos;
-            lastMoveTime = Time.time;
+            MoveToPosition(targetPos, targetWorldPos);
             PlaySound(moveSound);
-            if (EnemyOnSameTile(currentGridPos))
+
+            // Check for other enemies on the new grid position
+            foreach (var enemy in enemies)
             {
-                if (itemSystem != null && itemSystem.HasSword)
+                if (enemy.enemyType != EnemyType.Patroller)
                 {
-                    KillEnemiesOnSameTile(currentGridPos);
-                    itemSystem.ConsumeSword();
-                }
-                else
-                {
-                    CoinManager.Instance?.ClearSessionCoins();
-                    PlaySound(deathSound);
-                    StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
+                    Vector3Int enemyPos = groundTilemap.WorldToCell(enemy.transform.position);
+                    if (enemyPos == currentGridPos)
+                    {
+                        if (itemSystem != null && itemSystem.HasSword)
+                        {
+                            KillEnemiesOnSameTile(currentGridPos);
+                            itemSystem.ConsumeSword();
+                        }
+                        else
+                        {
+                            HapticFeedback.HeavyFeedback();
+                            PlaySound(deathSound);
+                            CoinManager.Instance?.ClearSessionCoins();
+                            StartCoroutine(EndingSequence(SceneManager.GetActiveScene().name));
+                        }
+                        return;
+                    }
                 }
             }
         }
@@ -186,15 +214,20 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        EnemyAI[] enemies = Object.FindObjectsByType<EnemyAI>(FindObjectsSortMode.None);
+        // Handle enemy AI logic after player has moved
+        Vector3Int playerPos = currentGridPos; // Declare playerPos here
         foreach (var enemy in enemies)
         {
-            Vector3Int playerPos = currentGridPos;
-            Vector3Int enemyPos = groundTilemap.WorldToCell(enemy.transform.position);
-            int dist = Mathf.Abs(playerPos.x - enemyPos.x) + Mathf.Abs(playerPos.y - enemyPos.y);
-            enemy.HandlePatrollerLogic(playerPos, dist);
-            enemy.HandleSentinelLogic(playerPos);
+            enemy.HandleEnemyLogic(playerPos);
         }
+    }
+
+
+    private void MoveToPosition(Vector3Int targetPos, Vector3 targetWorldPos)
+    {
+        currentGridPos = targetPos;
+        transform.position = targetWorldPos;
+        lastMoveTime = Time.time;
     }
 
 
