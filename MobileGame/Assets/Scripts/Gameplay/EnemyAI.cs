@@ -47,6 +47,21 @@ public class EnemyAI : MonoBehaviour
                 spriteRenderer.sprite = idleSprite;
         }
 
+        // Check if enemy is already one grid away from player at start
+        if (enemyType == EnemyType.Sleeper)
+        {
+            Vector3Int playerPos = groundTilemap.WorldToCell(playerTransform.position);
+            int dist = ManhattanDistance(currentGridPos, playerPos);
+
+            // If enemy is one grid away, start chasing immediately
+            if (dist == 1)
+            {
+                isChasing = true;
+                if (spriteRenderer != null && chaseSprite != null)
+                    spriteRenderer.sprite = chaseSprite;
+            }
+        }
+
         // Start patrol routine for Patrollers
         if (enemyType == EnemyType.Patroller && patrolPoints.Length > 0)
         {
