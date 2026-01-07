@@ -11,7 +11,7 @@ public class DailyRewardButton : MonoBehaviour
     [SerializeField] private Sprite spriteCooldown;
     [SerializeField] private TMP_Text timerText;
 
-    [SerializeField] private int cooldownDuration = 10; // e.g., 86400 for 24h
+    private int cooldownDuration = 86400; // e.g., 86400 for 24h
 
     private DateTime nextRewardTime;
     private bool isReady;
