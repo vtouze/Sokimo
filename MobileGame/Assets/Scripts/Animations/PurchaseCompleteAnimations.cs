@@ -33,7 +33,7 @@ public class PurchaseCompleteAnimations : MonoBehaviour
             case "coin50": sourceIcon = coin50Icon; break;
             case "coin100": sourceIcon = coin100Icon; break;
             case "coin150": sourceIcon = coin150Icon; break;
-            case "coin200": sourceIcon = coin200Icon; break;
+            case "coin190": sourceIcon = coin200Icon; break;
         }
 
         PlayCoinAnimationFrom(sourceIcon);
